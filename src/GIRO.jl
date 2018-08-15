@@ -1,9 +1,5 @@
 module GIRO
 
-using HDF5, Images, Plots, Optim
+greet() = print("Hello World!")
 
-
-# API: 
-export 
-
-end 
+end # module

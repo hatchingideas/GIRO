@@ -1,0 +1,7 @@
+julia 0.6
+LightXML
+Plots
+GR
+HDF5
+Interpolations
+JuliaDB
