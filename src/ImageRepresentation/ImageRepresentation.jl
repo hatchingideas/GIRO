@@ -1,12 +1,9 @@
 module ImageRepresentation
 
-abstract type MSData end
+using LibExpat
 
-struct mzMLData <: MSData
+include("getspectrumvec.jl")
 
-
-
-end
 
 
 end
