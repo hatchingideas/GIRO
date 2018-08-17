@@ -78,18 +78,15 @@ function mzMLSpectrum(mzMLSpectrumETree :: ETree)
 
     if FloatBits[MZIdx] == "64"
 
-        MZFloatLen = 8
-        MZ = [reinterpret(Float64, sum(UInt64.(MZBinary[i:(i+MZFloatLen-1)]) .<< [8*(j-1) for j in 1:MZFloatLen])) for i in 1:MZFloatLen:length(MZBinary)]
+        MZ = reinterpret(Float64, MZBinary)
 
     elseif FloatBits[MZIdx] == "32"
 
-        MZFloatLen = 4
-        MZ = [reinterpret(Float32, sum(UInt32.(MZBinary[i:i+(i+MZFloatLen-1)]) .<< [8*(j-1) for j in 1:MZFloatLen])) for i in 1:MZFloatLen:length(MZBinary)]
+        MZ = reinterpret(Float32, MZBinary)
 
     elseif FloatBits[MZIdx] == "16"
 
-        MZFloatLen = 2
-        MZ = [reinterpret(Float16, sum(UInt16.(MZBinary[i:i+(i+MZFloatLen-1)]) .<< [8*(j-1) for j in 1:MZFloatLen])) for i in 1:MZFloatLen:length(MZBinary)]
+        MZ = reinterpret(Float16, MZBinary)
 
     end
 
@@ -103,18 +100,15 @@ function mzMLSpectrum(mzMLSpectrumETree :: ETree)
 
     if FloatBits[IntensityIdx] == "64"
 
-        IntensityFloatLen = 8
-        Intensity = [reinterpret(Float64, sum(UInt64.(IntensityBinary[i:(i+IntensityFloatLen-1)]) .<< [8*(j-1) for j in 1:IntensityFloatLen])) for i in 1:IntensityFloatLen:length(IntensityBinary)]
+        Intensity = reinterpret(Float64, IntensityBinary)
 
     elseif FloatBits[MZIdx] == "32"
 
-        IntensityFloatLen = 4
-        Intensity = [reinterpret(Float32, sum(UInt32.(IntensityBinary[i:(i+IntensityFloatLen-1)]) .<< [8*(j-1) for j in 1:IntensityFloatLen])) for i in 1:IntensityFloatLen:length(IntensityBinary)]
+        Intensity = reinterpret(Float32, IntensityBinary)
 
     elseif FloatBits[MZIdx] == "16"
 
-        IntensityFloatLen = 2
-        Intensity = [reinterpret(Float16, sum(UInt16.(IntensityBinary[i:(i+IntensityFloatLen-1)]) .<< [8*(j-1) for j in 1:IntensityFloatLen])) for i in 1:IntensityFloatLen:length(IntensityBinary)]
+        Intensity = reinterpret(Float16, IntensityBinary)
 
     end
 

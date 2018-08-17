@@ -4,8 +4,8 @@ using LibExpat, CodecZlib
 
 import GIRO.MSData, GIRO.@checkfileexist
 
-include("mzMLSpectrum.jl")
+include("mzMLData.jl")
 
-export mzMLSpectrum
+export mzMLData
 
 end

@@ -77,19 +77,21 @@ MZFloatLen = 8
 
 @time MZ = [reinterpret(Float64, sum(UInt64.(MZBinary[i:(i+MZFloatLen-1)]) .<< [8*(j-1) for j in 1:MZFloatLen])) for i in 1:MZFloatLen:length(MZBinary)]
 
-
 ShiftBits = [8*(j-1) for j in 1:MZFloatLen]
 
-for  i in 1:MZFloatLen:length(MZBinary)
+length(MZBinary)/MZFloatLen
 
-    println("UInt64: ");  @time T1 = UInt64.(MZBinary[i:(i+MZFloatLen-1)])
-    println("BitShift: ");  @time T2 = T1 .<< ShiftBits
-    println("Sum: ");  @time T3 = sum(T2)
-    println("Re-interpret: ");  @time T4 = reinterpret(Float64, T3)
+MZ = zeros(Float64, Int(length(MZBinary)/MZFloatLen))
+
+@time reinterpret(Float64, MZBinary)
+
+@time for  i in 1:MZFloatLen:length(MZBinary)
+
+    MZ[Int((i-1)/MZFloatLen + 1)] = reinterpret(Float64, MZBinary[i:(i+MZFloatLen-1)])[1]
 
 end
 
-
+@time MZ1 = [reinterpret(Float64, MZBinary[i:(i+MZFloatLen-1)])[1] for  i in 1:MZFloatLen:length(MZBinary)]
 
 
 
