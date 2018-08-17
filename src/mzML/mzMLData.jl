@@ -11,7 +11,7 @@ end
 
 function mzMLData(FileDir :: String, FileName :: String)
 
-#@checkfileexist(FileDir, FileName)
+@checkfileexist FileDir FileName
 
 mzMLETree = xp_parse(readstring(joinpath(FileDir, FileName)));
 
@@ -22,8 +22,6 @@ length(mzMLRunETree) == 1 || warn(ErrorException("More than one run in the mzML.
 mzMLSpectrumETree = LibExpat.find(mzMLRunETree[1], "spectrumList//spectrum");
 
 NumSpectrum = length(mzMLSpectrumETree)
-
-println(NumSpectrum)
 
 Spectrum = map(mzMLSpectrum, mzMLSpectrumETree)
 

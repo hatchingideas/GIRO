@@ -2,13 +2,11 @@ module GIRO
 
 abstract type MSData end
 
+abstract type RTAdjustment end
+
 include("GeneralFunction.jl")
 
 include("GeneraMacros.jl")
-
-include(joinpath("mzML", "mzML.jl"))
-
-using mzML
 
 export @filenotexisterror, @checkfileexist,
        MSData
