@@ -1,4 +1,0 @@
-function interpmz()
-
-
-end 

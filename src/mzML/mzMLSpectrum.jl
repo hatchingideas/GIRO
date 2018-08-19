@@ -115,6 +115,7 @@ function mzMLSpectrum(mzMLSpectrumETree :: ETree)
     Col = findn(Intensity)
 
     SpIntensity = sparsevec(Intensity)
+
     SpMZ = sparsevec(Col, MZ[Col], length(MZ))
 
     this = mzMLSpectrum(Index, Id, MSLevel, Mode, ScanStartTime, SpMZ, SpIntensity)
