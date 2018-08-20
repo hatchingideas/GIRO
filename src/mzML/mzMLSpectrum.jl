@@ -121,3 +121,9 @@ function mzMLSpectrum(mzMLSpectrumETree :: ETree)
     this = mzMLSpectrum(Index, Id, MSLevel, Mode, ScanStartTime, SpMZ, SpIntensity)
 
 end
+
+function getmz_intensity(MD :: mzMLSpectrum)
+
+    (MD.MZ.nzval, MD.Intensity.nzval)
+
+end

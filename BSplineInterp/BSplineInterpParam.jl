@@ -1,4 +1,4 @@
-struct InterpParam
+struct BSplInterpParam <: InterpParam
 
     StartVal :: Float32
 

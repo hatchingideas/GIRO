@@ -4,12 +4,12 @@ module TestImageRepresentation
 using LibExpat
 using CodecZlib
 
-DataPath = "F:\\CPTAC\\mzML\\MS1_Align"
+
+
+DataPath = "G:\\CPTAC\\mzML\\MS1_Align"
 DataFile = "klc_031308p_cptac_study6_6B011.mzML"
 
-S = readstring(joinpath(DataPath, DataFile))
-
-mzMLData = xp_parse(S)
+M = mzMLData(DataPath, DataFile)
 
 mzMLETree = LibExpat.find(mzMLData)
 

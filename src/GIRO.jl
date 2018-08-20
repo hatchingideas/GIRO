@@ -1,22 +1,22 @@
 module GIRO
 
+using ArgParse
+
 abstract type MSData end
 
 abstract type RTAdjustment end
 
-# 3rd order B-spline look-up table
-const BSPL3 = 0
-
-# derivative of 3rd order B-spline look-up table
-const DBSPL3 = 0
+abstract type InterpParam end
 
 include("GeneralFunction.jl")
 
 include("GeneraMacros.jl")
 
+include("main.jl")
+
 export @filenotexisterror, @checkfileexist,
        flatmap, anscombe, readinspecifiedlines,
-       BSPL3, DBSPL3,
-       MSData, RTAdjustment
+       MSData, RTAdjustment, InterpParam,
+       main
 
 end

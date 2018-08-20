@@ -56,3 +56,21 @@ function mzMLData(FileDir :: String, FileName :: String)
     this = mzMLData(RTStart, RTEnd, MZStart, MZEnd, NumSpectrum, Spectrum)
 
 end
+
+function getrtvec(MD :: mzMLData)
+
+    map(x -> x.ScanStartTime, MD.Spectrum)
+
+end
+
+function getmzvec(MD :: mzMLData)
+
+    map(x -> x.MZ, MD.Spectrum)
+
+end
+
+function getintensityvec(MD :: mzMLData)
+
+    map(x -> x.Intensity, MD.Spectrum)
+
+end
