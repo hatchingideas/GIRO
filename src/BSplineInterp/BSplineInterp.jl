@@ -2,16 +2,21 @@ module BSplineInterp
 
 import GIRO.InterpParam
 
-Bu3 = u -> u^3/6
-Bu2 = u -> (-3u^3 + 3u^2 + 3u + 1)/6
-Bu1 = u -> ( 3u^3 - 6u^2 + 4)/6
-Bu0 = u-> (1-u)^3/6
+const Bu3 = u -> u^3/6
+const Bu2 = u -> (-3u^3 + 3u^2 + 3u + 1)/6
+const Bu1 = u -> ( 3u^3 - 6u^2 + 4)/6
+const Bu0 = u-> (1-u)^3/6
 
-dBu3 = u -> u^2/2
-dBu2 = u -> -1.5u^2 + u + .5
-dBu1 = u -> 1.5u^2 - 2u
-dBu0 = u -> -.5*(u-1)^2
+const BU = [Bu3, Bu2, Bu1, Bu0]
 
+const dBu3 = u -> u^2/2
+const dBu2 = u -> -1.5u^2 + u + .5
+const dBu1 = u -> 1.5u^2 - 2u
+const dBu0 = u -> -.5*(u-1)^2
+
+const DBU = [dBu3, dBu2, dBu1, dBu0]
+
+#=
 const RESLEVEL = 16
 
 const BSPL_IDX = 0 : 1/(2^RESLEVEL) : (1 - 1/(2^RESLEVEL))
@@ -29,7 +34,7 @@ const DB0 = dBu0.(BSPL_IDX)
 const BSPL_TAB = Dict([BSPL_IDX[i] => [B3[i], B2[i], B1[i], B0[i]] for i in 1:length(BSPL_IDX)])
 
 const DBSPL_TAB = Dict([BSPL_IDX[i] => [DB3[i], DB2[i], DB1[i], DB0[i]] for i in 1:length(BSPL_IDX)])
-
+=#
 
 
 
