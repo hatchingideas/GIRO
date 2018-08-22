@@ -10,7 +10,11 @@ mutable struct RTAdjRec
 
     EndIdx :: Int32
 
-    BsplBasisMat :: Matrix
+    BsplQuarterSupport :: Vector{Float32}
+
+    BsplQuarterSupportLen :: Vector{Int32}
+
+    BsplBasisMat :: Vector{Matrix}
 
     BsplCP :: Matrix
 
@@ -35,14 +39,6 @@ function RTAdjRec(StartRT :: Union{Float32, Float64}, EndRT :: Union{Float32, Fl
     this = RTAdjRec(StartRT, EndRT, RTRes, StartIdx, EndIdx, BsplBasisMat, BsplCP, DyadicResLevel)
 
 end
-
-floor((100 - 32) / 1)
-
-RTAdjRec(32. , 100., 1., 7)
-
-
-
-2^7
 
 function getdyadicreslevel(RT_AR :: RTAdjRec)
 

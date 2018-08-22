@@ -2,16 +2,14 @@ module mzML
 
 using LibExpat, CodecZlib, Interpolations
 
-import GIRO.MSData, GIRO.@checkfileexist, GIRO.flatmap, GIRO.readinspecifiedlines,
-       GIRO.InterpParam
+import GIRO.GIRO_Base.MSData, GIRO.GIRO_Base.@checkfileexist, GIRO.GIRO_Base.flatmap, GIRO.GIRO_Base.readinspecifiedlines,
+       GIRO.GIRO_Base.InterpParam
 
-
+include("mzMLSpectrum.jl")
 
 include("mzMLData.jl")
 
-include("getmz_intensity.jl")
-
 export mzMLData,
-       getmz_intensity, getrtvec, getmzvec, getintensityvec, rebin_intensity
+       getmsdata, getrtvec, getmzvec, getintensityvec, get_min_mz, get_max_mz
 
 end

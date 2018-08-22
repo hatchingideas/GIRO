@@ -1,4 +1,4 @@
-struct RebinParam <: InterpParam
+struct RebinParam #<: InterpParam
 
     StartVal :: Float32
 
@@ -8,7 +8,7 @@ struct RebinParam <: InterpParam
 
 end
 
-function getinterplocation(IP :: RebinParam)
+function getinterploc(IP :: RebinParam)
 
     collect(IP.StartVal : IP.Res : IP.EndVal)
 

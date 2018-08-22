@@ -1,8 +1,9 @@
-function rebin_mz(MZ :: Vector, Intensity :: Vector, LinMZ_IParam :: InterpParam)
+function rebin_mz(MZ :: Vector, Intensity :: Vector, LinMZ_IParam :: RebinParam)
 
-    StartVal = getinterplocation(LinMZ_IParam)
-    EndVal = getendval(LinMZ_IParam)
-    Res = getres(LinMZ_IParam)
+    ILoc = getinterploc(LinMZ_IParam)
+    StartVal = ILoc[1]
+    EndVal = ILoc[end]
+    Res = ILoc[2] - ILoc[1]
 
     (StartVal < minimum(MZ)) && (EndVal > maximum(MZ)) && (StartVal < EndVal) ? nothing : throw(ErrorException("Wrong MZ range. "))
     MZRange = collect((StartVal-Res/2) : Res : (EndVal+Res/2))
@@ -16,13 +17,5 @@ function rebin_mz(MZ :: Vector, Intensity :: Vector, LinMZ_IParam :: InterpParam
     end
 
     LinIntensity
-
-end
-
-function rebin_mz(Spec :: mzMLSpectrum, LinMZ_IParam :: InterpParam)
-
-    (MZ, Intensity) = getmz_intensity(Spec)
-
-    rebinmz(MZ, Intensity, LinMZ_IParam)
 
 end

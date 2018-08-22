@@ -1,6 +1,4 @@
-include("mzMLSpectrum.jl")
-
-struct mzMLData #<: MSData
+struct mzMLData <: MSData
 
     RTStart :: Float32
 
@@ -49,11 +47,18 @@ function mzMLData(FileDir :: String, FileName :: String)
 
     RTEnd = maximum(RTVec)
 
-    MZStart = mapreduce(x -> minimum(x.MZ.nzval), max, Spectrum)
+    MZStart = mapreduce(x -> minimum(x.MZ.nzval), min, Spectrum)
 
-    MZEnd = mapreduce(x -> maximum(x.MZ.nzval), min, Spectrum)
+    MZEnd = mapreduce(x -> maximum(x.MZ.nzval), max, Spectrum)
 
     this = mzMLData(RTStart, RTEnd, MZStart, MZEnd, NumSpectrum, Spectrum)
+
+end
+
+# Facade for mzMLData:
+function getmsdata(FileDir :: String, FileName :: String)
+
+    mzMLData(FileDir, FileName)
 
 end
 
@@ -66,6 +71,18 @@ end
 function getmzvec(MD :: mzMLData)
 
     map(x -> x.MZ, MD.Spectrum)
+
+end
+
+function get_min_mz(MD :: mzMLData)
+
+    MD.MZStart
+
+end
+
+function get_max_mz(MD :: mzMLData)
+
+    MD.MZEnd
 
 end
 
