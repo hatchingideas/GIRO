@@ -1,7 +1,7 @@
 function interp_rt(RTVec :: Vector, MZ :: Vector, Intensity :: Vector)
 
     NumSpecs = length(RTVec)
-    NumSpecs == length(MZ) == length(Intensity)
+    NumSpecs == length(MZVec) == length(IntensityVec)
 
     RTEnd = maximum(RTVec)
     RTStart = minimum(RTVec)
@@ -10,31 +10,33 @@ function interp_rt(RTVec :: Vector, MZ :: Vector, Intensity :: Vector)
     RTInterpRes = (RTEnd - RTStart) / (2NumSpecs)
 
     # Given a natural boundary condition by adding a margin of 3*RTInterpRes:
-    RTRange = collect((RTStart - 3RTInterpRes) : RTInterpRes : (RTEnd + 3RTInterpRes))
+    RTRange = collect((RTStart - 5RTInterpRes) : RTInterpRes : (RTEnd + 5RTInterpRes))
 
-    IMG = zeros(eltype(Intensity[1]), length(RTRange), length(Intensity[1]))
+    IMG = zeros(eltype(IntensityVec[1]), length(RTRange), length(IntensityVec[1]))
 
     # Nonlinear interpolation where the support of the B-spline is 4*RTInterpRes:
     RT_Idx_On_Grid = map(x -> searchsortedfirst(RTRange, x), RTVec)
 
     for i in 1:length(RT_Idx_On_Grid)
 
-        u = (RTRange[RT_Idx_On_Grid[i]] - RTVec[i])/RTInterpRes
+        u = (RTRange[RT_Idx_On_Grid[i]] - RTVec[i])/(2RTInterpRes)
 
-        XIC = flatmap(x -> x[i], Intensity)
+        XIC = IntensityVec[i]
 
-        for j in 1:4
-
-             IMG[RT_Idx_On_Grid[i] + j - 3, :] += BU[j](u) .* XIC
-
-        end
+        IMG[RT_Idx_On_Grid[i] - 4, :] += BU[1](u) .* XIC
+        IMG[RT_Idx_On_Grid[i] - 3, :] += BU[1](u+.5) .* XIC
+        IMG[RT_Idx_On_Grid[i] - 2, :] += BU[2](u) .* XIC
+        IMG[RT_Idx_On_Grid[i] - 1, :] += BU[2](u+.5) .* XIC
+        IMG[RT_Idx_On_Grid[i] , :] += BU[3](u) .* XIC
+        IMG[RT_Idx_On_Grid[i] + 1, :] += BU[3](u+.5) .* XIC
+        IMG[RT_Idx_On_Grid[i] + 2, :] += BU[4](u) .* XIC
+        IMG[RT_Idx_On_Grid[i] + 3, :] += BU[4](u+.5) .* XIC
 
     end
 
     # Downsample by a factor of two to get the interpolated image:
-
-    RTRange = RTRange[1:2:end]
-    IMG = IMG[1:2:end, :]
+    RTRange = RTRange[4:2:(end-4)]
+    IMG = IMG[4:2:(end-4), :]
 
     (RTRange, MZ, IMG)
 

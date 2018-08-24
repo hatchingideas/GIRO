@@ -1,6 +1,6 @@
 module mzML
 
-using LibExpat, CodecZlib, Interpolations
+using LibExpat, CodecZlib
 
 import GIRO.GIRO_Base.MSData, GIRO.GIRO_Base.@checkfileexist, GIRO.GIRO_Base.flatmap, GIRO.GIRO_Base.readinspecifiedlines,
        GIRO.GIRO_Base.InterpParam
