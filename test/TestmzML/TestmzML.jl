@@ -1,60 +1,23 @@
 module TestmzML
 
-workspace()
+include(realpath(joinpath(@__DIR__, "..", "..", "src", "mzML", "mzML.jl")))
 
-include(joinpath("..", "..", "src", "mzML", "mzML.jl"))
+using GIRO.mzML, Base.Test
 
-using mzML, Base.Profile
+function testmzml()
 
-@time a = mzMLData("G:/CPTAC/mzML/MS1_Align", "klc_031308p_cptac_study6_6B011.mzML")
+    println(realpath(joinpath(@__DIR__, "..", "data")))
 
-a.Spectrum[1].MZ
-a.Spectrum[1].Intensity
+    MD = mzMLData(realpath(joinpath(@__DIR__, "..", "data")), "spectrum.xml")
 
-Res = 1
-StartVal = minimum(a.Spectrum[1].MZ.nzval) - Res
-EndVal = maximum(a.Spectrum[1].MZ.nzval) + Res
+    @testset begin
 
-MZ = a.Spectrum[1].MZ
-Intensity = a.Spectrum[1].Intensity
+        @test length(MD.Spectrum) == 3
 
-StartVal < minimum(MZ)
-
-EndVal > maximum(MZ)
-
-(MZ, Intensity) = getmz_intensity(a.Spectrum[1])
-
-(StartVal < minimum(MZ)) && (EndVal > maximum(MZ)) && (StartVal < EndVal) ? nothing : throw(ErrorException("Wrong MZ range. "))
-MZRange = collect((StartVal-Res/2) : Res : (EndVal+Res/2))
-
-LinIntensity = zeros(eltype(Intensity), Int(floor((EndVal - StartVal) / Res)) + 1)
-
-for i in 1:length(MZ)
-
-    LinIntensity[start(searchsorted(MZRange, MZ[i])) - 1] += Intensity[i]
+    end
 
 end
 
-LinIntensity
-
-using Plots
-
-p = plot(MZ, Intensity)
-plot!(p, collect(StartVal:Res:EndVal), LinIntensity)
-display(p)
-
-using Plots
-
-gr()
-
-typeof(diff(a.Spectrum[1].MZ))
-
-plot(a.Spectrum[1].MZ[1:end-1], diff(a.Spectrum[1].MZ))
-
-x = 1:10; y = rand(10,2)
-plot(a.Spectrum[1].MZ, a.Spectrum[1].Intensity)
-
-
-
+export testmzml
 
 end
