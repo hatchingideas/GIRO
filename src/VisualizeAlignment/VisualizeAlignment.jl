@@ -31,6 +31,6 @@ end
 
 
 
-export show_lcms, show_log_lcms, show_overlaid_lcms,
+export show_lcms, show_log_lcms, show_overlaid_lcms
 
 end

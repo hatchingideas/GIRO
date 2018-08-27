@@ -36,10 +36,10 @@ const BSPL_TAB = Dict([BSPL_IDX[i] => [B3[i], B2[i], B1[i], B0[i]] for i in 1:le
 const DBSPL_TAB = Dict([BSPL_IDX[i] => [DB3[i], DB2[i], DB1[i], DB0[i]] for i in 1:length(BSPL_IDX)])
 =#
 
+include("BsplineInterpParam.jl")
+
+include("bsplinterp.jl")
 
 
-
-
-include("InterpParam.jl")
 
 end

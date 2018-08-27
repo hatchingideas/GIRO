@@ -1,4 +1,4 @@
-struct RebinParam #<: InterpParam
+struct RebinParam <: MZInterpParam
 
     StartVal :: Float32
 

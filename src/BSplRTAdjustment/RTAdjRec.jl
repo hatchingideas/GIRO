@@ -1,32 +1,26 @@
 mutable struct RTAdjRec
 
-    StartRT :: Float32
-
-    EndRT :: Float32
-
-    RTRes :: Float32
-
     StartIdx :: Int32
 
     EndIdx :: Int32
 
-    BsplQuarterSupport :: Vector{Float32}
-
     BsplQuarterSupportLen :: Vector{Int32}
 
-    BsplBasisMat :: Vector{Matrix}
+    BsplBasisMat :: Matrix
 
     BsplCP :: Matrix
 
-    DyadicResLevel :: Int32
+    DyadicResLevel :: Vector{Int32}
 
 end
 
-function RTAdjRec(StartRT :: Union{Float32, Float64}, EndRT :: Union{Float32, Float64}, RTRes :: Union{Float32, Float64}, DyadicResLevel :: Union{Int32, Int64})
+function RTAdjRec(RIP :: RTInterpParam, InitBSplQuarterSupportLen :: Int32)
 
-    RTAdjLen = floor((EndRT - StartRT) / RTRes)
+    RTRange = getinterploc(RIP)
 
-    2^float(DyadicResLevel) > RTAdjLen || throw(ErrorException("DyadicResLevel too small."))
+    RTAdjLen = length(RTRange)
+
+    DyadicResLevel = ceil(log2(RTAdjLen))
 
     StartIdx = Int(floor((2^DyadicResLevel - RTAdjLen)/2))
 

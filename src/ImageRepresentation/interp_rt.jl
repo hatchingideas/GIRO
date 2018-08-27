@@ -1,16 +1,15 @@
-function interp_rt(RTVec :: Vector, MZ :: Vector, Intensity :: Vector)
+function interp_rt(RTVec :: Vector, IntensityVec :: Vector, IP :: RTInterpParam)
 
     NumSpecs = length(RTVec)
-    NumSpecs == length(MZVec) == length(IntensityVec)
+    NumSpecs == length(IntensityVec)
 
-    RTEnd = maximum(RTVec)
-    RTStart = minimum(RTVec)
-
-    # Upsample in RT dimension by a factor of two:
-    RTInterpRes = (RTEnd - RTStart) / (2NumSpecs)
-
-    # Given a natural boundary condition by adding a margin of 3*RTInterpRes:
-    RTRange = collect((RTStart - 5RTInterpRes) : RTInterpRes : (RTEnd + 5RTInterpRes))
+    # Given a natural boundary condition by adding a margin:
+    UpsampledIP = get_upsampled_rtinterpparam(IP)
+    RTRange = getinterploc(UpsampledIP)
+    RTStart = getendval(UpsampledIP)
+    RTEnd = getstartval(UpsampledIP)
+    RTInterpRes = getres(UpsampledIP)
+    RTBoundaryWinSize = getboundarywinsize(UpsampledIP)
 
     IMG = zeros(eltype(IntensityVec[1]), length(RTRange), length(IntensityVec[1]))
 
@@ -35,9 +34,7 @@ function interp_rt(RTVec :: Vector, MZ :: Vector, Intensity :: Vector)
     end
 
     # Downsample by a factor of two to get the interpolated image:
-    RTRange = RTRange[4:2:(end-4)]
-    IMG = IMG[4:2:(end-4), :]
-
-    (RTRange, MZ, IMG)
+#    RTRange = RTRange[(RTBoundaryWinSize+1):2:(end-(RTBoundaryWinSize))]
+    IMG = IMG[(RTBoundaryWinSize+1):2:(end-(RTBoundaryWinSize)), :]
 
 end

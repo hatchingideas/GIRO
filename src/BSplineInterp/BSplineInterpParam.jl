@@ -1,10 +1,26 @@
 struct BSplInterpParam <: InterpParam
 
-    StartVal :: Float32
+    RTGrid :: RTInterpParam
 
-    EndVal :: Float32
+    RTAdj :: RTAdjRec
 
-    Res :: Float32
+end
+
+function getinterploc(BIP :: BSplInterpParam)
+
+    getinterploc(BIP.RTGrid)
+
+end
+
+function get_rt_adj_vec(BIP :: BSplInterpParam)
+
+    get_rt_adj_vec(BIP.RTAdj)
+
+end
+
+function get_adjusted_rt(BIP :: BSplInterpParam)
+
+    getinterploc(BIP) - get_rt_adj_vec(BIP)
 
 end
 
