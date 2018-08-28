@@ -1,15 +1,10 @@
 module ImageRepresentation
 
-import GIRO.GIRO_Base.MSData, GIRO.GIRO_Base.InterpParam
+import GIRO.GIRO_Base.MSData, GIRO.GIRO_Base.InterpParam, GIRO.GIRO_Base.BU, GIRO.GIRO_Base.DBU
 
-abstract type MZInterpParam <: InterpParam end 
+import GIRO.mzML.getrtvec, GIRO.mzML.getmzvec, GIRO.mzML.getintensityvec
 
-const Bu1 = u -> u^3/6
-const Bu2 = u -> (-3u^3 + 3u^2 + 3u + 1)/6
-const Bu3 = u -> ( 3u^3 - 6u^2 + 4)/6
-const Bu4 = u-> (1-u)^3/6
-
-const BU = [Bu1, Bu2, Bu3, Bu4]
+abstract type MZInterpParam <: InterpParam end
 
 include("RebinParam.jl")
 
@@ -19,6 +14,8 @@ include("RTInterpParam.jl")
 
 include("interp_rt.jl")
 
-export RebinParam, rebin_mz, RTInterpParam, getinterploc, interp_rt, getimg
+include("getimg.jl")
+
+export RebinParam, rebin_mz, RTInterpParam, getinterploc, getinterplocwithboundarywin, interp_rt, getimg
 
 end

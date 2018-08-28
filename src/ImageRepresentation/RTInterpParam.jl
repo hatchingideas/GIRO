@@ -13,6 +13,12 @@ end
 function getinterploc(IP :: RTInterpParam)
 
     # Upsample in RT dimension by a factor of two:
+    collect(IP.StartVal : IP.Res : IP.EndVal)
+
+end
+
+function getinterplocwithboundarywin(IP :: RTInterpParam)
+
     collect((IP.StartVal - IP.BoundaryWinSize * IP.Res) : IP.Res : (IP.EndVal + IP.BoundaryWinSize * IP.Res))
 
 end

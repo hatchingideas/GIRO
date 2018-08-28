@@ -1,20 +1,20 @@
-mutable struct RTAdjRec
+mutable struct RTAdjRec <: RTAdjustment
 
     StartIdx :: Int32
 
     EndIdx :: Int32
 
-    BsplQuarterSupportLen :: Vector{Int32}
+    BSplQuarterSupportLen :: Vector{Int32}
 
-    BsplBasisMat :: Matrix
+    BSplBasisMat :: Matrix
 
-    BsplCP :: Matrix
+    BSplCP :: Matrix
 
-    DyadicResLevel :: Vector{Int32}
+    DyadicResLevel :: Int32
 
 end
 
-function RTAdjRec(RIP :: RTInterpParam, InitBSplQuarterSupportLen :: Int32)
+function RTAdjRec(RIP :: RTInterpParam, BSplQuarterSupportLen :: Vector{Int}, ConstructFlag :: Bool)
 
     RTRange = getinterploc(RIP)
 
@@ -26,16 +26,44 @@ function RTAdjRec(RIP :: RTInterpParam, InitBSplQuarterSupportLen :: Int32)
 
     EndIdx = Int(StartIdx + RTAdjLen - 1)
 
-    BsplBasisMat = Matrix()
+    if ConstructFlag == true
 
-    BsplCP = Matrix()
+        (BSplBasisMat, BSplCP) = construct_bspl_basis_and_cp(DyadicResLevel, BsplQuarterSupportLen)
 
-    this = RTAdjRec(StartRT, EndRT, RTRes, StartIdx, EndIdx, BsplBasisMat, BsplCP, DyadicResLevel)
+    else
+
+        BSplBasisMat = Matrix(0,0)
+
+        BSplCP = Matrix(0,0)
+
+    end
+
+    this = RTAdjRec(StartIdx, EndIdx, BSplQuarterSupportLen, BSplBasisMat, BSplCP, DyadicResLevel)
 
 end
 
-function getdyadicreslevel(RT_AR :: RTAdjRec)
+function getdyadicreslevel(RTA :: RTAdjRec)
 
-    RT_AR.DyadicResLevel
+    RTA.DyadicResLevel
+
+end
+
+function get_rt_adj_vec(RTA :: RTAdjRec)
+
+    (RTA.AdjMat*RT_AR.BsplCP)[RT_AR.StartIdx : RT_AR.EndIdx, :]
+
+end
+
+#=
+function updatebsplbasismat!(RTA :: RTAdjRec, BSplBasisMat :: Matrix)
+
+    RTA.BsplBasisMat = BSplBasisMat
+
+end
+=#
+
+function updatebsplcp!(RTA :: RTAdjRec, BSplCP :: Matrix)
+
+    RTA.BSplCP = BSplCP
 
 end

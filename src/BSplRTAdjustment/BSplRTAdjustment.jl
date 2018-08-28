@@ -1,6 +1,8 @@
 module BSplRTAdjustment
 
-import GIRO.RTAdjustment
+import GIRO.GIRO_Base.RTAdjustment, GIRO.ImageRepresentation.RTInterpParam
+
+import GIRO.ImageRepresentation.getinterploc
 
 include("RTAdjRec.jl")
 

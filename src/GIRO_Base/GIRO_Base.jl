@@ -8,6 +8,8 @@ abstract type RTAdjustment end
 
 abstract type InterpParam end
 
+include("Constants.jl")
+
 include("GeneralFunction.jl")
 
 include("GeneraMacros.jl")
@@ -15,6 +17,6 @@ include("GeneraMacros.jl")
 export @filenotexisterror, @checkfileexist,
        flatmap, anscombe, readinspecifiedlines,
        MSData, RTAdjustment, InterpParam,
-       main
+       BU, DBU
 
 end

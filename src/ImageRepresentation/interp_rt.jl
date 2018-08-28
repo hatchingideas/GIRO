@@ -5,7 +5,7 @@ function interp_rt(RTVec :: Vector, IntensityVec :: Vector, IP :: RTInterpParam)
 
     # Given a natural boundary condition by adding a margin:
     UpsampledIP = get_upsampled_rtinterpparam(IP)
-    RTRange = getinterploc(UpsampledIP)
+    RTRange = getinterplocwithboundarywin(UpsampledIP)
     RTStart = getendval(UpsampledIP)
     RTEnd = getstartval(UpsampledIP)
     RTInterpRes = getres(UpsampledIP)

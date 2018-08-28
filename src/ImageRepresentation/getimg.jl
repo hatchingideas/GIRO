@@ -1,14 +1,24 @@
-function getimg(MSD :: T where T <: MSData, RBParam :: RebinParam, LIParam :: LinInterpParam)
+function getimg(MSD :: T where T <: MSData, RTIParam :: RTInterpParam, MZIParam :: RebinParam)
 
     # Calling interfaces of MSData:
     RTVec = getrtvec(MSD)
+    RTInterpLoc = getinterploc(RTIParam)
+    RTLen = length(RTInterpLoc)
 
-    (MZVec, IntensityVec) = getmz_intensity(MSD)
+    MZVec = getmzvec(MSD)
+    MZInterpLoc = getinterploc(MZIParam)
+    MZLen = length(MZInterpLoc)
 
-    # MZ rebinning:
-    rebin_mz(MZVec, IntensityVec, RBParam)
+    IntensityVec = getintensityvec(MSD)
 
-    # RT interpolation:
-    interp_rt(RTVec, MZRec, IntensityVec)
+    RebinnedMZImg = Vector(MZLen)
+
+    for i in 1:MZLen
+
+        RebinnedMZImg = rebin_mz(MZVec[i], IntensityVec[i], MZIparam)
+
+    end
+
+    IMG = interp_rt(RTVec, RebinnedMZImg, RTIParam)
 
 end

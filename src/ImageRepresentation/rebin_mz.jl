@@ -17,6 +17,6 @@ function rebin_mz(MZ :: Union{Vector, SparseVector}, Intensity :: Union{Vector, 
 
     end
 
-    (ILoc, LinIntensity)
+    LinIntensity
 
 end

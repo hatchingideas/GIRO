@@ -10,11 +10,11 @@ include(realpath(joinpath(@__DIR__, "..", "..", "src", "ImageRepresentation", "I
 
 include(realpath(joinpath(@__DIR__, "..", "..", "src", "VisualizeAlignment", "VisualizeAlignment.jl")))
 
-using GIRO.mzML, Base.Test
-
 import GIRO.GIRO_Base.flatmap
 
-using ImageRepresentation, VisualizeAlignment
+@everywhere using GIRO.mzML, Base.Test
+
+@everywhere using GIRO.ImageRepresentation
 
 #function testimagerepresentation()
 
@@ -23,58 +23,95 @@ using ImageRepresentation, VisualizeAlignment
 FilePath = "G:\\CPTAC\\mzML\\MS1_Align"
 FileName = ["klc_031308p_cptac_study6_6B011.mzML", "klc_031308p_cptac_study6_6B011_080316024238.mzML"]
 
-MD = map(x -> mzMLData(FilePath, x), FileName)
+MD = pmap(x -> mzMLData(FilePath, x), FileName)
 
 RTVec = getrtvec.(MD)
 MinRT = minimum(flatmap(x ->x, RTVec)) - .1
+MinRT = 899.9925
 MaxRT = maximum(flatmap(x ->x, RTVec)) + .1
+MaxRT = 11039.2572
 RTRes = (MaxRT - MinRT) / mean(length.(RTVec))
-RT_InterpLoc = ImageRepresentation.getinterploc(LinRT_IParam)
+RTRes = 1.5612
+LinRT_IParam = RTInterpParam(MinRT, MaxRT, RTRes, 5)
 
-import ImageRepresentation.RTInterpParam
+include(realpath(joinpath(@__DIR__, "..", "..", "src", "BSplRTAdjustment", "BSplRTAdjustment.jl")))
 
-LinRT_IParam = ImageRepresentation.RTInterpParam(MinRT, MaxRT, RTRes, 5)
+using BSplRTAdjustment
 
-MZVec = getmzvec.(MD)
+BSplRTAdjustment.RTAdjRec(LinRT_IParam, [4], false)
+
+RIP = LinRT_IParam
+
+InitBSplQuarterSupportLen = 4
+
+RTRange = getinterploc(RIP)
+
+RTAdjLen = length(RTRange)
+
+DyadicResLevel = ceil(log2(RTAdjLen))
+
+StartIdx = Int(floor((2^DyadicResLevel - RTAdjLen)/2))
+
+EndIdx = Int(StartIdx + RTAdjLen - 1)
+
+BsplBasisMat = Matrix(0,0)
+
+BsplCP = Matrix(0,0)
+
+this = RTAdjRec(StartIdx, EndIdx, InitBSplQuarterSupportLen, BsplBasisMat, BsplCP, DyadicResLevel)
+
+
+
+
+
+
+
+
 MinMZ = minimum(get_min_mz.(MD))
 MaxMZ = maximum(get_max_mz.(MD))
 ResMZ = (MaxMZ - MinMZ)/1000
+LinMZ_IParam = RebinParam(MinMZ, MaxMZ, ResMZ)
 
-LinMZ_IParam = ImageRepresentation.RebinParam(MinMZ, MaxMZ, ResMZ)
+getimg(MD[1], LinRT_IParam, LinMZ_IParam)
 
 IntensityVec = getintensityvec.(MD)
 
-@time begin
-
-NumSamples = length(FileName)
-
-IMG = Vector(NumSamples)
-
-MZVec
-
 import ImageRepresentation.rebin_mz
 
-for i in 1:NumSamples
+@time begin
 
-    MZLen = length(MZVec[i])
+    NumSamples = length(FileName)
 
-    RebinnedMZImg = Vector(MZLen)
+    IMG = Vector(NumSamples)
 
-    for j in 1:MZLen
+    for i in 1:NumSamples
 
-        (MZInterpLoc, RebinnedMZImg[j]) = rebin_mz(MZVec[i][j], IntensityVec[i][j], LinMZ_IParam)
+        MZLen = length(MZVec[i])
+
+        RebinnedMZImg = Vector(MZLen)
+
+        for j in 1:MZLen
+
+            RebinnedMZImg[j] = rebin_mz(MZVec[i][j], IntensityVec[i][j], LinMZ_IParam)
+
+        end
+
+        IMG[i] = interp_rt(RTVec[i], RebinnedMZImg, LinRT_IParam)
 
     end
 
-    (RTInterpLoc, IMG[i]) = interp_rt(RTVec[i], RebinnedMZImg, LinRT_IParam)
-
 end
 
-end
-
-
+IMG
 
 using Plots
+
+p = plot(1:6495, IMG[1][:,3])
+
+plot!(p,1:6495, IMG[2][:,3])
+
+display(p)
+
 
 p = plot(ILoc, LinIntensity)
 
