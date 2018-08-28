@@ -11,3 +11,5 @@ const dBu3 = u -> 1.5u^2 - 2u
 const dBu4 = u -> -.5*(u-1)^2
 
 const DBU = [dBu1, dBu2, dBu3, dBu4]
+
+const MINDRL = 5

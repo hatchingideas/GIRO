@@ -48,9 +48,15 @@ function getdyadicreslevel(RTA :: RTAdjRec)
 
 end
 
+function getbsplbasismat(RTA :: RTAdjRec)
+
+    RTA.BsplBasisMat
+
+end
+
 function get_rt_adj_vec(RTA :: RTAdjRec)
 
-    (RTA.AdjMat*RT_AR.BsplCP)[RT_AR.StartIdx : RT_AR.EndIdx, :]
+    (RTA.BsplBasisMat*RTA.BSplCP)[RTA.StartIdx : RTA.EndIdx, :]
 
 end
 

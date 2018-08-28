@@ -12,10 +12,13 @@ using GIRO.mzML, Base.Test
 
 import GIRO.GIRO_Base.flatmap
 
-using ImageRepresentation, VisualizeAlignment
+using GIRO.ImageRepresentation #, VisualizeAlignment
 
 MD = mzMLData(realpath(joinpath(@__DIR__, "..", "data")), "spectrum.xml")
 
+
+
+IMG = getimg(MD, )
 
 
 end
