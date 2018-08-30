@@ -1,4 +1,8 @@
-# This is the main workflow function in GIRO which is invoked in command line:
+#= This is the main multi-resolution workflow function in GIRO to iteratively
+   deform and normalize the original LCMS samples.
+
+   It can be invoked in command line:
+=#
 workspace()
 
 addprocs(Sys.CPU_CORES)

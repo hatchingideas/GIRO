@@ -1,12 +1,23 @@
-function lsnormalize(Img, NB)
+function lsnormalize(ImgStack :: Matrix, LS_NP :: LS_NormalParam)
 
-    #
-    (NumRow, NumCol, NumImg) = size(Img)
+    LogAnsImgStack = log.(anscombe.(ImgStack))
 
-    MeanImg = squeeze((sum(Img, 3) ./ NumImg), 3)
+    (NumRow, NumCol, NumImg) = size(ImgStack)
 
-    DiffImg = Img .- MeanImg
+    MeanImg = squeeze((sum(LogAnsImgStack, 3) ./ NumImg), 3)
 
-    LSFitCoef = DiffImg .\ NB
+    NMask = zeros(Float32, NumRow, NumCol, NumImg)
+
+    for i in 1:NumImg
+
+        DiffImg = MeanImg .- LogAnsImgStack[:,:,i]
+
+        LSImg = LS_NP.NBases \ DiffImg
+
+        NMask[:,:,i] = exp.(2*LS_NP.NBases*LSImg)
+
+    end
+
+    NMask
 
 end

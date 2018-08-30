@@ -1,16 +1,16 @@
 mutable struct RTAdjRec <: RTAdjustment
 
-    StartIdx :: Int32
+    StartIdx :: Int
 
-    EndIdx :: Int32
+    EndIdx :: Int
 
     BSplQuarterSupportLen :: Vector{Int32}
 
-    BSplBasisMat :: Matrix
+    BSplBasisMat :: Vector
 
-    BSplCP :: Matrix
+    BSplCP :: Vector
 
-    DyadicResLevel :: Int32
+    DyadicResLevel :: Int
 
 end
 
