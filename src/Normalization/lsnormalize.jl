@@ -1,4 +1,4 @@
-function lsnormalize(ImgStack :: Matrix, LS_NP :: LS_NormalParam)
+function lsnormalize(ImgStack :: Vector{Matrix}, LS_NP :: LS_NormalParam)
 
     LogAnsImgStack = log.(anscombe.(ImgStack))
 

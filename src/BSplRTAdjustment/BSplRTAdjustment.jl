@@ -8,10 +8,8 @@ include("construct_bspl_basis_and_cp.jl")
 
 include("RTAdjRec.jl")
 
-#include("downsamplertadjrec.jl")
+include("downsample_rtadjrec.jl")
 
-#include("upsampleby2_rtadjrec.jl")
-
-export RTAdjRec #get_rt_adj_vec
+export RTAdjRec, get_rt_adj_vec, get_l1_cp
 
 end

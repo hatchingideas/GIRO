@@ -14,9 +14,7 @@ mutable struct RTAdjRec <: RTAdjustment
 
 end
 
-function RTAdjRec(RIP :: RTInterpParam, BSplQuarterSupportLen :: Vector{Int}, ConstructFlag :: Bool)
-
-    RTRange = getinterploc(RIP)
+function RTAdjRec(RTRange :: Vector, BSplQuarterSupportLen :: Vector{Int}, ConstructFlag :: Bool)
 
     RTAdjLen = length(RTRange)
 
@@ -51,6 +49,18 @@ end
 function getbsplbasismat(RTA :: RTAdjRec)
 
     RTA.BsplBasisMat
+
+end
+
+function getbsplcp(RTA :: RTAdjRec)
+
+    RTA.BsplCP
+
+end
+
+function get_l1_cp(RTA :: RTAdjRec)
+
+    mapreduce(abs, +, RTA.BSplCP)
 
 end
 

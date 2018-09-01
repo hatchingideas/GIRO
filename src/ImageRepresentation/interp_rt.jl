@@ -8,6 +8,7 @@ function interp_rt(RTVec :: Vector, IntensityVec :: Vector, IP :: RTInterpParam)
     RTRange = getinterplocwithboundarywin(UpsampledIP)
     RTStart = getendval(UpsampledIP)
     RTEnd = getstartval(UpsampledIP)
+    
     RTInterpRes = getres(UpsampledIP)
     RTBoundaryWinSize = getboundarywinsize(UpsampledIP)
 
@@ -34,7 +35,9 @@ function interp_rt(RTVec :: Vector, IntensityVec :: Vector, IP :: RTInterpParam)
     end
 
     # Downsample by a factor of two to get the interpolated image:
-#    RTRange = RTRange[(RTBoundaryWinSize+1):2:(end-(RTBoundaryWinSize))]
+    RTRange = RTRange[(RTBoundaryWinSize+1):2:(end-(RTBoundaryWinSize))]
     IMG = IMG[(RTBoundaryWinSize+1):2:(end-(RTBoundaryWinSize)), :]
+
+    (RTRange, IMG)
 
 end

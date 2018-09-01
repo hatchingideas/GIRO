@@ -11,11 +11,11 @@ function getimg(MSD :: T where T <: MSData, RTIParam :: RTInterpParam, MZIParam 
 
     IntensityVec = getintensityvec(MSD)
 
-    RebinnedMZImg = Vector(MZLen)
+    RebinnedMZImg = Vector(length(RTVec))
 
-    for i in 1:MZLen
+    for i in 1:length(RTVec)
 
-        RebinnedMZImg = rebin_mz(MZVec[i], IntensityVec[i], MZIparam)
+        RebinnedMZImg[i] = rebin_mz(MZVec[i], IntensityVec[i], MZIParam)
 
     end
 

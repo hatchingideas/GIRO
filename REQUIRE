@@ -2,5 +2,4 @@ julia 0.6
 LibExpat
 Plots
 GR
-ArgParse
-BandedMatrices
+ImageFiltering
