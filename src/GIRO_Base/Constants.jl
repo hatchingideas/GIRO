@@ -12,4 +12,4 @@ const dBu4 = u -> -.5*(u-1)^2
 
 const DBU = [dBu1, dBu2, dBu3, dBu4]
 
-const MINDRL = 8
+const MINDRL = 7

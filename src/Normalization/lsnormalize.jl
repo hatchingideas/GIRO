@@ -4,20 +4,20 @@ function lsnormalize(ImgStack :: Vector{Matrix}, LS_NP :: LS_NormalParam)
 
     (NumRow, NumCol, NumImg) = size(ImgStack)
 
-    MeanImg = squeeze((sum(LogAnsImgStack, 3) ./ NumImg), 3)
+    MeanImg = reduce(+, LogAnsDownIMGVec) / NumImg
 
-    NMask = zeros(Float32, NumRow, NumCol, NumImg)
+    NMask = [zeros(Float32, NumRow, NumCol) for i in 1:NumImg]
 
     for i in 1:NumImg
 
-        DiffImg = MeanImg .- LogAnsImgStack[:,:,i]
+        DiffImg = MeanImg .- LogAnsImgStack[i]
 
         LSImg = LS_NP.NBases \ DiffImg
 
-        NMask[:,:,i] = exp.(2*LS_NP.NBases*LSImg)
+        NMask[i] = exp.(2*LS_NP.NBases*LSImg)
 
     end
 
-    NMask
+    (NMask, MeanImg)
 
 end

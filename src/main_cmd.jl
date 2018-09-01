@@ -20,6 +20,10 @@ FileName = ["klc_031308p_cptac_study6_6B011.mzML",
 
 @time MDVec = pmap(x -> getmsdata(FileDir, x), FileName)
 
+MaxDeformIterations = 100
+
+MaxNormIterations = 20
+
 NumImg = length(FileName)
 
 Lambda = .1
@@ -41,7 +45,6 @@ MinMZ = minimum(get_min_mz.(MDVec))
 MaxMZ = maximum(get_max_mz.(MDVec))
 ResMZ = (MaxMZ - MinMZ)/1000
 LinMZ_IParam = RebinParam(MinMZ, MaxMZ, ResMZ)
-
 
 # Interpolate to get the uniform image representation of samples:
 @time RT_IMG_Vec = map(x -> getimg(x, LinRT_IParam, LinMZ_IParam), MDVec)
@@ -65,19 +68,6 @@ for ResLevel = MINDRL : DyadicResLevel
     # Log-Anscombe image representation:
     LogAnsDownIMGVec = log.(anscombe.(DIMGVec))
 
-    # Normalizing:
-    LS_NP = LS_NormalParam(DIMGVec)
-    NMask = lsnormalize(DIMGVec)
-
-    # Least square criterion:
-    MeanImg = reduce(+, LogAnsDownIMGVec) / NumImg
-    (CTN, dF_dI) = leastsquare(LogAnsDownIMGVec, MeanImg)
-
-    # Image gradient:
-    IG = map(x -> bspl_interp_derivative(RT, , ), LogAnsDownIMGVec)
-    DeformLogAnsDownIMG = map(x -> x[1], IG)
-    dI_dD = map(x -> x[2], IG)
-
     # Deformation field:
     if ResLevel == MINDRL
 
@@ -92,13 +82,45 @@ for ResLevel = MINDRL : DyadicResLevel
 
     end
 
+    DeltaCTN_Norm = 0
+    DeltaCTN_Deform = 0
+
+    for NormIter = 1:MaxNormIterations
+
+    # Normalizing:
+    LS_NP = LS_NormalParam(DIMGVec)
+
+    (NMask, MeanImg) = lsnormalize(DIMGVec)
+
+    CTN_NormUpdate = leastsquare([LogAnsDownIMGVec[i].*NMask[i] for i in 1:NumImg], MeanImg)
+
+    CTN_NormUpdate += Lambda*mapreduce(x->get_l1_cp(x), +, DeformFieldParam)
+
+    DeltaCTN_Norm = CTN - CTN_NormUpdate
+
+    DeltaCTN_Norm >= 0 ? CTN = CTN_NormUpdate : break
+
+    PreviousImg =
+
+    # Initial image gradient for each level:
+    dI_dD = map(x -> bspl_derivative(RT, , ), LogAnsDownIMGVec)
+
+    for StepSize = [1., .5, .1, .05, .01] # Back-track search
+
+
+    for DeformIter in 1:MaxDeformIterations
+
+    (CTN, dF_dI) = leastsquare(LogAnsDownIMGVec, MeanImg)
+
+
+
+
     dD_dCP = getbsplbasismat(DeformFieldParam)
 
     # Add regularizer:
     CTN += Lambda * mapreduce(x->get_l1_cp(x), +, DeformFieldParam)
 
     # Chain rule for CP gradient:
-    StepSize = 1.
     dF_dCP = map(x -> StepSize * (dF_dI .* x) * dD_dCP, dI_dD)
 
     # Soft thresholding by Lambda:
@@ -114,14 +136,24 @@ for ResLevel = MINDRL : DyadicResLevel
 
     # Recompute the criterion:
     MeanImg = reduce(+, DeformLogAnsDownIMGVec) / NumImg
-    (CTN_New, dF_dI) = leastsquare(DeformLogAnsDownIMGVec, MeanImg)
+    (CTN_DeformUpdate, dF_dI) = leastsquare(DeformLogAnsDownIMGVec, MeanImg)
 
-    CTN_New += Lambda * mapreduce(abs, +, DeformFieldParam)
+    CTN_DeformUpdate += Lambda * mapreduce(x->get_l1_cp(x), +, DeformFieldParam)
 
-    DiffCTN = CTN - CTN_New
+    DeltaCTN_Deform = CTN - CTN_DeformUpdate
 
     # Decide whether to terminate this level of iteration:
-    DiffCTN < 0 ? break : map((x,y) -> updatebsplcp!(x,y), DeformFieldParam, RTAdjVec)
+    if DiffCTN_Deform > 0
+
+        CTN = CTN_DeformUpdate
+
+        map((x,y) -> updatebsplcp!(x,y), DeformFieldParam, RTAdjVec)
+
+    else
+
+        break
+
+    end
 
 end
 
