@@ -10,15 +10,18 @@ abstract type NormalParam end
 
 abstract type InterpParam end
 
+import Base.writecsv
+
 include("Constants.jl")
 
 include("GeneralFunction.jl")
 
-include("GeneraMacros.jl")
+include("GeneralMacros.jl")
 
 export @filenotexisterror, @checkfileexist,
-       flatmap, anscombe, readinspecifiedlines,
+       flatmap, anscombe, readinspecifiedlines, leastsquare,
+       dyadic_res_level, dyadic_rt_len, dyadic_start_end_idx, downsample2level,
        MSData, RTAdjustment, NormalParam, InterpParam,
-       BU, DBU
+       BU, DBU, MINDRL
 
 end

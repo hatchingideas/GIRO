@@ -56,21 +56,35 @@ function readinspecifiedlines(f :: IO, StartMark :: String, EndMark :: String)
 
 end
 
-function leastsquare(Img :: Vector, MeanImg :: Matrix)
+function leastsquare(Img :: Vector, RefImg :: Matrix)
 
     mapreduce(x -> x > 0, &, Img) || throw(ErrorException("Img has negative value. "))
 
-    mapreduce(x -> x > 0, &, MeanImg) || throw(ErrorException("MeanImg has negative value. "))
+    mapreduce(x -> x > 0, &, RefImg) || throw(ErrorException("MeanImg has negative value. "))
 
-    dC_dI = [x - MeanImg for x in Img]
+    dC_dI = [x - RefImg for x in Img]
 
-    CTN = mapreduce(x -> x*x, +, dC_dI)
+    CTN = sum(mapreduce(x -> x .* x, +, dC_dI))
 
     (CTN, dC_dI)
 
 end
 
-function dyadic_start_end_idx(RTLen, DyadicResLevel)
+function dyadic_res_level(RTLen :: Int)
+
+    ceil(log2(RTLen))
+
+end
+
+function dyadic_rt_len(RTLen :: Int)
+
+    Int(2^(get_dyadicreslevel(RTLen)))
+
+end
+
+function dyadic_start_end_idx(RTLen)
+
+    DyadicResLevel = dyadic_res_level(RTLen)
 
     StartIdx = Int(floor((2^DyadicResLevel - RTLen)/2))
 
@@ -107,5 +121,31 @@ function downsample2level(IMG, StartLevel, EndLevel)
     EndIdx = Int(floor((RTEndIdx - 1)/(2^DiffLevel)))
 
     PaddedImg[StartIdx:EndIdx, :]
+
+end
+
+function writecsv(FileName :: String, DataDict :: Dict)
+
+    isfile(FileName) ? warn("File exists, will be overwritten. ") : nothing
+
+    Header = [k for k in keys(DataDict)]
+
+    DataRecords = [DataDict[k] for k in keys(DataDict)]
+
+    NumRecords = length(DataRecords[1])
+
+    open(FileName, "w") do f
+
+        write(f, mapreduce(x -> "$x, ", *, Header)[1:end-2], "\n")
+
+        for i in 1:NumRecords
+
+            write(f, mapreduce(x -> "$x, ", *, [j[i] for j in DataRecords])[1:end-2], "\n")
+
+        end
+
+    end
+
+    nothing
 
 end

@@ -1,6 +1,6 @@
 module Normalization
 
-import GIRO.GIRO_Base.anscombe
+using GIRO.GIRO_Base
 
 include("LS_NormalParam.jl")
 

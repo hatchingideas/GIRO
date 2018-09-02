@@ -1,16 +1,15 @@
-function lsnormalize(ImgStack :: Vector{Matrix}, LS_NP :: LS_NormalParam)
+function lsnormalize(LogAnsImgVec :: Vector{Matrix{T}} where T <: AbstractFloat, LS_NP :: LS_NormalParam)
 
-    LogAnsImgStack = log.(anscombe.(ImgStack))
+    NumImg = length(LogAnsImgVec)
+    (NumRow, NumCol) = size(LogAnsImgVec[1])
 
-    (NumRow, NumCol, NumImg) = size(ImgStack)
-
-    MeanImg = reduce(+, LogAnsDownIMGVec) / NumImg
+    MeanImg = reduce(+, LogAnsImgVec) / NumImg
 
     NMask = [zeros(Float32, NumRow, NumCol) for i in 1:NumImg]
 
     for i in 1:NumImg
 
-        DiffImg = MeanImg .- LogAnsImgStack[i]
+        DiffImg = MeanImg .- LogAnsImgVec[i]
 
         LSImg = LS_NP.NBases \ DiffImg
 
@@ -18,6 +17,6 @@ function lsnormalize(ImgStack :: Vector{Matrix}, LS_NP :: LS_NormalParam)
 
     end
 
-    (NMask, MeanImg)
+    NMask
 
 end

@@ -4,20 +4,23 @@ struct LS_NormalParam
 
 end
 
-function LS_NormalParam(DyadicResLevel, BSplQuarterSupportLen, StartIdx, EndIdx)
+function LS_NormalParam(RTLen :: Int, BSplQuarterSupportLen :: Int)
 
-    SizeRT = EndIdx - StartIdx + 1
+    DyadicResLevel = dyadic_res_level(RTLen)
 
     DyadicSizeRT = 2^DyadicResLevel
 
-    DyadicSizeRT >= SizeRT || throw(ErrorException("Wrong dyadic level."))
+    (StartIdx, EndIdx) = dyadic_start_end_idx(RTLen)
+
+    SizeRT = EndIdx - StartIdx + 1
 
     u = collect(0:BSplQuarterSupportLen-1)/BSplQuarterSupportLen
     B = [BU[1].(u), BU[2].(u), BU[3].(u), BU[4].(u)]
     NormBU = norm(B,2)
     NormalizedB = [BU[1].(u)..., BU[2].(u)..., BU[3].(u)..., BU[4].(u)...] / NormBU
 
-    NBases = zeros(Float32, DyadicSizeRT, DyadicSizeRT/BSplQuarterSupportLen-3)
+    NumBases = DyadicSizeRT/BSplQuarterSupportLen-3
+    NBases = zeros(Float64, DyadicSizeRT, NumBases)
 
     for j in 0:(NumBases - 1)
 

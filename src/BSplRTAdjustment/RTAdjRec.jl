@@ -14,25 +14,23 @@ mutable struct RTAdjRec <: RTAdjustment
 
 end
 
-function RTAdjRec(RTRange :: Vector, BSplQuarterSupportLen :: Vector{Int}, ConstructFlag :: Bool)
+function RTAdjRec(RTAdjLen :: Int, BSplQuarterSupportLen :: Vector{Int}, ConstructFlag :: Bool)
 
-    RTAdjLen = length(RTRange)
+    DyadicResLevel = dyadic_res_level(RTAdjLen)
 
-    DyadicResLevel = ceil(log2(RTAdjLen))
-
-    StartIdx = Int(floor((2^DyadicResLevel - RTAdjLen)/2))
-
-    EndIdx = Int(StartIdx + RTAdjLen - 1)
+    (StartIdx, EndIdx) = dyadic_start_end_idx(RTAdjLen, DyadicResLevel)
 
     if ConstructFlag == true
 
-        (BSplBasisMat, BSplCP) = construct_bspl_basis_and_cp(DyadicResLevel, BsplQuarterSupportLen)
+        BSplBasisMat = [construct_bspl_basis(DyadicResLevel, BsplQuarterSupportLen)]
+
+        BSplCP = [zeros(Float32, size(BSplBasisMat, 2))]
 
     else
 
-        BSplBasisMat = Matrix(0,0)
+        BSplBasisMat = [0]
 
-        BSplCP = Matrix(0,0)
+        BSplCP = [0]
 
     end
 

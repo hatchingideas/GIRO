@@ -9,8 +9,13 @@ include(joinpath("mzML", "mzML.jl"))
 # Formatting mzML samples into images:
 include(joinpath("ImageRepresentation", "ImageRepresentation.jl"))
 
+# Normalizing Images:
+include(joinpath("Normalization", "Normalization.jl"))
 
-using ArgParse
-include("parse_command.jl")
+# Retention time adjustment vector by Bspline bases and control points:
+include(joinpath("BSplRTAdjustment", "BSplRTAdjustment.jl"))
+
+#using ArgParse
+#include("parse_command.jl")
 
 end

@@ -1,4 +1,4 @@
-function downsample_rtadjrec(RTA :: RTAdjuRec, Downsample2DyadicLevel :: Int)
+function downsample_rtadjrec(RTA :: RTAdjRec, Downsample2DyadicLevel :: Int)
 
     (Downsample2DyadicLevel < getdyadicreslevel(RTA)) && (Downsample2DyadicLevel >= MINDRL) || throw(ErrorException("Too much downsample applied."))
 
@@ -21,7 +21,7 @@ function downsample_rtadjrec(RTA :: RTAdjuRec, Downsample2DyadicLevel :: Int)
 
 end
 
-function downsample_rtadjrec(RTA :: RTAdjuRec, DownsampledRTA :: RTAdjRec)
+function downsample_rtadjrec(RTA :: RTAdjRec, DownsampledRTA :: RTAdjRec)
 
     # Continued from last resolution level:
     length(RTA.BSplQuarterSupportLen) == length(RTA.BsplBasisMat) == length(RTA.BSplCP) || throw(ErrorException("Vector length mismatch."))
