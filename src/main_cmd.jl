@@ -21,6 +21,8 @@ FileDir = "/media/hl16839/My\ Passport/CPTAC/mzML/MS1_Align/Profile"
 FileName = ["klc_031308p_cptac_study6_6B011.mzML",
             "klc_031308p_cptac_study6_6B011_080316024238.mzML"]
 
+println("Starting GIRO:")
+
 @time MDVec = pmap(x -> getmsdata(FileDir, x), FileName)
 
     MaxDeformIterations = 50
@@ -81,40 +83,40 @@ if ResLevel == MINDRL
 
     # Initiate the deformation field:
 
-        ResLevelDeformFieldParam = downsample_rtadjrec(DeformFieldParam, ResLevel)
+        ResLevelDeformFieldParamVec = [downsample_rtadjrec(DeformFieldParam, ResLevel) for i in 1:NumImg]
 
     else
 
         # Reconstruct the deformation field:
-        ResLevelDeformFieldParam = downsample_rtadjrec(DeformFieldParam, ResLevelDeformFieldParam)
+        ResLevelDeformFieldParamVec = map(x -> downsample_rtadjrec(DeformFieldParam, x), ResLevelDeformFieldParam)
 
 end
 
-# Initial deformation of each level:
-
-
-
-DeltaCTN_Norm = 0#CTN - CTN_NormUpdate
+DeltaCTN_Norm = 0 #CTN - CTN_NormUpdate
 DeltaCTN_Deform = 0
+
+# Log-Anscombe image representation:
+LogAnsDownIMGVec = [log.(anscombe.(i)) for i in IMGInterp]
+
+MeanImg = reduce(+, LogAnsDownIMGVec) / NumImg
+
+CTN = leastsquare(LogAnsDownIMGVec, MeanImg)
+
+CTN += Lambda*mapreduce(get_l1_cp, +, ResLevelDeformFieldParamVec)
 
 # 2. Normalization iterations:
 for NormIter = 1:MaxNormIterations
 
-    # Log-Anscombe image representation:
-    LogAnsDownIMGVec = log.(anscombe.(DIMGVec))
-
-    MeanImg = reduce(+, LogAnsDownIMGVec) / NumImg
-
-    CTN = leastsquare(LogAnsDownIMGVec, MeanImg)
-    CTN += Lambda*mapreduce(get_l1_cp, +, ResLevelDeformFieldParam)
+    # Initial deformation of each level:
+    (DeformedLogAnsDownIMGVec, dI_dD) = pmap((x,y) -> bspl_interp_derivative(get_rt_adj_vec(x),y), DeformFieldParamVec, LogAnsDownIMGVec)
 
     LS_NP = LS_NormalParam(ResLevelRTLen, NormBSplQuarterSupportLen)
 
-    NMask = lsnormalize(LogAnsDownIMGVec, LS_NP)
+    NMask = lsnormalize(DeformedLogAnsDownIMGVec, LS_NP)
 
-    NormLogAnsDownIMGVec = [LogAnsDownIMGVec[i] .* NMask[i] for i in 1:NumImg]
+    NormDeformedLogAnsDownIMGVec = [DeformedLogAnsDownIMGVec[i] .* NMask[i] for i in 1:NumImg]
 
-    MeanNormImg = reduce(+, NormLogAnsDownIMGVec) / NumImg
+    MeanNormImg = reduce(+, NormDeformedLogAnsDownIMGVec) / NumImg
 
     (CTN_NormUpdate, dF_dI) = leastsquare(NormLogAnsDownIMGVec, MeanNormImg)
 
@@ -124,56 +126,44 @@ for NormIter = 1:MaxNormIterations
 
     DeltaCTN_Norm > 0.1 ? CTN = CTN_NormUpdate : break
 
-#    PreviousImg =
-
-    # Initial image gradient for each level:
-#    dI_dD = map(x -> bspl_derivative(RT, , ), LogAnsDownIMGVec)
-
-    # 3. Deformation iterations:
-
-    for DeformStepSize = [1., .5, .1, .05, .01] # Back-track search
-
-
-    for DeformIter in 1:MaxDeformIterations
-
-    (CTN, dF_dI) = leastsquare(LogAnsDownIMGVec, MeanImg)
-
-
-
-
+    # B-spline bases for deformation:
     dD_dCP = getbsplbasismat(DeformFieldParam)
 
-    # Add regularizer:
-    CTN += Lambda * mapreduce(x->get_l1_cp(x), +, DeformFieldParam)
+    # 3. Deformation iterations:
+    for DeformStepSize = [1., .5, .1, .05, .01] # Back-track search
+
+    for DeformIter in 1:MaxDeformIterations
 
     # Chain rule for CP gradient:
     dF_dCP = map(x -> StepSize * (dF_dI .* x) * dD_dCP, dI_dD)
 
-    # Soft thresholding by Lambda:
-    RTAdjVec = map(x -> softthreshold(x, Lambda), dF_dCP)
-
     # Update the control points:
-    map((x,y) -> updatebsplcp!(x,y), DeformFieldParam, RTAdjVec)
+    RTAdjVec = map(get_rt_adj_vec, DeformFieldParamVec) .- dF_dCP
 
-    RTAdjVec = map(get_rt_adj_vec, DeformFieldParam)
+    # Soft thresholding by Lambda:
+    RTAdjVec = map(x -> softthreshold(x, Lambda), RTAdjVec)
 
-    # Recompute the regularized criterion for deformed image:
-    map((x,y) -> bspl_interp_derivative(RT, x, y), RTAdjVec,
+    # Deforme the image and re-normalize:
+    DeformedIMGDerVec = map((x,y) -> bspl_interp_derivative(x,y), RTAdjVec, LogAnsDownIMGVec)
+    NormDeformedIMGVec = map((x,y) -> x[1] .* y, DeformedIMGDerVec, NMask)
+    dI_dD = map((x,y) -> x[2] .* y, DeformedIMGDerVec, NMask)
 
     # Recompute the criterion:
-    MeanImg = reduce(+, DeformLogAnsDownIMGVec) / NumImg
-    (CTN_DeformUpdate, dF_dI) = leastsquare(DeformLogAnsDownIMGVec, MeanImg)
+    MeanNormDeformedImg = reduce(+, NormDeformedIMGVec) / NumImg
+    (CTN_DeformUpdate, dF_dI) = leastsquare(NormDeformedIMGVec, MeanNormDeformedImg)
 
-    CTN_DeformUpdate += Lambda * mapreduce(x->get_l1_cp(x), +, DeformFieldParam)
+    CTN_DeformUpdate += Lambda * mapreduce(x->norm(x,1), +, RTAdjVec)
 
     DeltaCTN_Deform = CTN - CTN_DeformUpdate
 
     # Decide whether to terminate this level of iteration:
     if DiffCTN_Deform > 0
 
+        # Update objective function:
         CTN = CTN_DeformUpdate
 
-        map((x,y) -> updatebsplcp!(x,y), DeformFieldParam, RTAdjVec)
+        # Update the Bspline deformation control points:
+        map((x,y) -> updatebsplcp!(x,y), DeformFieldParamVec, RTAdjVec)
 
     else
 
@@ -183,7 +173,7 @@ for NormIter = 1:MaxNormIterations
 
 end
 
-# write out csv output:
+println("Writing out retention time adjustments in csv files:")
 for i in 1:NumImg
 
     # interpolate to recover the deformation at scan_start_time:

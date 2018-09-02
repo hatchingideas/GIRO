@@ -102,11 +102,14 @@ function downsample2level(IMG, StartLevel, EndLevel)
 
     DiffLevel = StartLevel - EndLevel
 
-    (RTStartIdx, RTEndIdx) = dyadic_start_end_idx(size(IMG,1), StartLevel)
+    RTLen = size(IMG,1)
+    MZLen = size(IMG,2)
 
-    RTLen = Int(2^(ceil(log2(size(IMG,1)))))
+    (RTStartIdx, RTEndIdx) = dyadic_start_end_idx(RTLen, StartLevel)
 
-    PaddedImg = zeros(eltype(IMG), RTLen, size(IMG,2))
+    DyadicSizeRT  = dyadic_rt_len(RTLen)
+
+    PaddedImg = zeros(eltype(IMG), DyadicSizeRT, MZLen)
 
     PaddedImg[RTStartIdx:RTEndIdx, :] = IMG
 
@@ -147,5 +150,15 @@ function writecsv(FileName :: String, DataDict :: Dict)
     end
 
     nothing
+
+end
+
+function softthreshold(IMG, Lambda)
+
+    Lambda >= 0 || throw(ErrorException("Lambda cannot be negative. "))
+
+    f = x -> abs(x) > Lambda ? sign(x)*abs(abs(x)-Lambda) : 0.
+
+    f.(IMG)
 
 end
