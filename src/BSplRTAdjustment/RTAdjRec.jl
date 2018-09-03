@@ -18,7 +18,7 @@ function RTAdjRec(RTAdjLen :: Int, BSplQuarterSupportLen :: Vector{Int}, Constru
 
     DyadicResLevel = dyadic_res_level(RTAdjLen)
 
-    (StartIdx, EndIdx) = dyadic_start_end_idx(RTAdjLen, DyadicResLevel)
+    (StartIdx, EndIdx) = dyadic_start_end_idx(RTAdjLen)
 
     if ConstructFlag == true
 
@@ -46,25 +46,25 @@ end
 
 function getbsplbasismat(RTA :: RTAdjRec)
 
-    RTA.BsplBasisMat
+    RTA.BSplBasisMat
 
 end
 
 function getbsplcp(RTA :: RTAdjRec)
 
-    RTA.BsplCP
+    RTA.BSplCP
 
 end
 
 function get_l1_cp(RTA :: RTAdjRec)
 
-    mapreduce(abs, +, RTA.BSplCP)
+    mapreduce(x -> sum(abs.(x)), +, RTA.BSplCP)
 
 end
 
 function get_rt_adj_vec(RTA :: RTAdjRec)
 
-    (RTA.BsplBasisMat*RTA.BSplCP)[RTA.StartIdx : RTA.EndIdx, :]
+    reduce(+, map((x,y) -> x*y, RTA.BSplBasisMat, RTA.BSplCP))
 
 end
 
@@ -76,7 +76,9 @@ function updatebsplbasismat!(RTA :: RTAdjRec, BSplBasisMat :: Matrix)
 end
 =#
 
-function updatebsplcp!(RTA :: RTAdjRec, BSplCP :: Matrix)
+function updatebsplcp!(RTA :: RTAdjRec, BSplCP :: Vector)
+
+    length(RTA.BSplCP) == length(BSplCP) || throw(ErrorException("Wrong CP vector size. "))
 
     RTA.BSplCP = BSplCP
 

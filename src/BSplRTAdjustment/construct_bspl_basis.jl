@@ -1,4 +1,4 @@
-function construct_bspl_basis(DyadicResLevel :: Int, BSplQuarterSupportLen :: Int, RTStartIdx :: Int, RTEndIdx :: Int)
+function construct_bspl_basis(DyadicResLevel :: T where T <: Signed, BSplQuarterSupportLen :: T where T <: Signed)
 
     RTLen = 2^DyadicResLevel
 
@@ -18,6 +18,6 @@ function construct_bspl_basis(DyadicResLevel :: Int, BSplQuarterSupportLen :: In
 
     end
 
-    sparse(BSplDeformBasis[RTStartIdx:RTEndIdx, :])
+    sparse(BSplDeformBasis)
 
 end

@@ -37,13 +37,13 @@ function bspl_interp_derivative(RTAdjVec :: Vector, IMG :: Matrix)
     IMGDer = zeros(eltype(IMG), RTLen, MZLen)
 
     # No boundary cases: assuming at least five rows of zeros along each boundary.
-    for i in 3 : (NumUniqueCP - 1)
+    for i in 2 : (NumUniqueCP - 2)
 
         InterpIdx = New_RT_Idx_On_Grid[i]:(New_RT_Idx_On_Grid[i+1] - 1)
-        u = (RTVec[InterpIdx] .- NewRTVec[i])/(New_RT_Idx_On_Grid[i+1] - New_RT_Idx_On_Grid[i])
+        u = (RTVec[InterpIdx] .- NewRTVec[i])/(NewRTVec[i+1] - NewRTVec[i])
         NormBU = norm([BU[4].(u); BU[3].(u); BU[2].(u); BU[1].(u)], 1)
-        IMGInterp[InterpIdx,:] += (BU[4].(u) * NewIMG_CP[i-2,:]' .+ BU[3].(u) * NewIMG_CP[i-1,:]' .+ BU[2].(u) * NewIMG_CP[i,:]' + BU[1].(u) * NewIMG_CP[i+1,:]') / NormBU
-        IMGDer[InterpIdx,:] += (DBU[4].(u) * NewIMG_CP[i-2,:]' .+ DBU[3].(u) * NewIMG_CP[i-1,:]' .+ DBU[2].(u) * NewIMG_CP[i,:]' + DBU[1].(u) * NewIMG_CP[i+1,:]') / NormBU
+        IMGInterp[InterpIdx,:] += (BU[4].(u) * NewIMG_CP[i-1,:]' .+ BU[3].(u) * NewIMG_CP[i,:]' .+ BU[2].(u) * NewIMG_CP[i+1,:]' + BU[1].(u) * NewIMG_CP[i+2,:]') / NormBU
+        IMGDer[InterpIdx,:] += (DBU[4].(u) * NewIMG_CP[i-1,:]' .+ DBU[3].(u) * NewIMG_CP[i,:]' .+ DBU[2].(u) * NewIMG_CP[i+1,:]' + DBU[1].(u) * NewIMG_CP[i+2,:]') / NormBU
 
     end
 

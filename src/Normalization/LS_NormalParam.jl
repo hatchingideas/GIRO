@@ -10,10 +10,6 @@ function LS_NormalParam(RTLen :: Int, BSplQuarterSupportLen :: Int)
 
     DyadicSizeRT = 2^DyadicResLevel
 
-    (StartIdx, EndIdx) = dyadic_start_end_idx(RTLen)
-
-    SizeRT = EndIdx - StartIdx + 1
-
     u = collect(0:BSplQuarterSupportLen-1)/BSplQuarterSupportLen
     B = [BU[1].(u), BU[2].(u), BU[3].(u), BU[4].(u)]
     NormBU = norm(B,2)
@@ -28,6 +24,6 @@ function LS_NormalParam(RTLen :: Int, BSplQuarterSupportLen :: Int)
 
     end
 
-    this = LS_NormalParam(sparse(NBases[StartIdx:EndIdx, :]))
+    this = LS_NormalParam(sparse(NBases))
 
 end
