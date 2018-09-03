@@ -16,7 +16,7 @@ end
 function downsample_rtadjrec(RTA :: RTAdjRec, DownsampledRTA :: RTAdjRec)
 
     # Continued from last resolution level:
-    length(RTA.BSplQuarterSupportLen) == length(RTA.BsplBasisMat) == length(RTA.BSplCP) || throw(ErrorException("Vector length mismatch."))
+    length(RTA.BSplQuarterSupportLen) == length(RTA.BSplBasisMat) == length(RTA.BSplCP) || throw(ErrorException("Vector length mismatch."))
 
     # Re-generate / normalize the BSplDeformBasis and CP:
     DyadicResLevel = getdyadicreslevel(DownsampledRTA) + 1
@@ -24,8 +24,6 @@ function downsample_rtadjrec(RTA :: RTAdjRec, DownsampledRTA :: RTAdjRec)
     DyadicResLevel <= getdyadicreslevel(RTA) || throw(ErrorException("Cannot down-sample: resolution mismatch."))
 
     BSplQuarterSupportLen = [DownsampledRTA.BSplQuarterSupportLen... , DownsampledRTA.BSplQuarterSupportLen[end]*2]
-
-    DiffLevel = RTA.DyadicResLevel - DyadicResLevel
 
     StartIdx = 1
 
@@ -38,9 +36,9 @@ function downsample_rtadjrec(RTA :: RTAdjRec, DownsampledRTA :: RTAdjRec)
     NormBU =  map(x -> maximum(abs.(x[:,1])), BSplBasisMat[1:end-1])
 
     # Adjust the CP by the norm of the basis functions:
-    DownsampledBSplCP = 2 * BSplCP .* PreNormBU ./ NormBU
+    DownsampledBSplCP = 2 * DownsampledRTA.BSplCP .* PreNormBU ./ NormBU
 
-    BSplCP = [DownsampledBSplCP... , zeros(Float32, size(BSplBasisMat[end], 2))]
+    BSplCP = [zeros(Float32, size(BSplBasisMat[1], 2)), DownsampledBSplCP...]
 
     RTAdjRec(StartIdx, EndIdx, BSplQuarterSupportLen, BSplBasisMat, BSplCP, DyadicResLevel)
 

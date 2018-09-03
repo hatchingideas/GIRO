@@ -19,7 +19,7 @@ include("GeneralFunction.jl")
 include("GeneralMacros.jl")
 
 export @filenotexisterror, @checkfileexist,
-       flatmap, anscombe, readinspecifiedlines, leastsquare, softthreshold,
+       flatmap, anscombe, readinspecifiedlines, leastsquare, softthreshold, normalizedchainrule,
        dyadic_res_level, dyadic_rt_len, dyadic_start_end_idx, downsample2level, bspl_interp_derivative,
        MSData, RTAdjustment, NormalParam, InterpParam,
        BU, DBU, MINDRL
