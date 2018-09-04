@@ -16,6 +16,8 @@ addprocs(Sys.CPU_CORES)
 
 using Base.Profile, Plots
 
+@time begin
+
 #FileDir = "F:\\CPTAC\\mzML\\MS1_Align\\Profile"
 FileDir = "/media/hl16839/My\ Passport/CPTAC/mzML/MS1_Align/Profile"
 
@@ -34,46 +36,41 @@ FileName = ["klc_031308p_cptac_study6_6B011_080316024238.mzML",
 
 println("Starting GIRO:")
 
-@time MDVec = pmap(x -> getmsdata(FileDir, x), FileName)
+MDVec = pmap(x -> getmsdata(FileDir, x), FileName)
 
-    MaxDeformIterations = 50
+MaxDeformIterations = 50
 
-    MaxNormIterations = 20
+MaxNormIterations = 20
 
-    NumImg = length(FileName)
+NumImg = length(FileName)
 
-    Lambda = .1
+Lambda = .1
 
-    HardIntensityThreshold = 2
+HardIntensityThreshold = 2
 
-    NormBSplQuarterSupportLen = [8, 4]
+NormBSplQuarterSupportLen = [8, 4]
 
-    DeformBSplQuarterSupportLen = [4]
+DeformBSplQuarterSupportLen = [4]
 
-    BSplFilter = [1., 4., 1.]/6
+BSplFilter = [1., 4., 1.]/6
 
-    RTVec = getrtvec.(MDVec)
-    MinRT = minimum(flatmap(x ->x, RTVec)) - .1
-    MaxRT = maximum(flatmap(x ->x, RTVec)) + .1
-    RTRes = (MaxRT - MinRT) / mean(length.(RTVec))
-    LinRT_IParam = RTInterpParam(MinRT, MaxRT, RTRes, 5)
-    RT = getinterploc(LinRT_IParam)
-    RTLen = length(RT)
-    (StartIdx, EndIdx) = dyadic_start_end_idx(RTLen)
+RTVec = getrtvec.(MDVec)
+MinRT = minimum(flatmap(x ->x, RTVec)) - .1
+MaxRT = maximum(flatmap(x ->x, RTVec)) + .1
+RTRes = (MaxRT - MinRT) / mean(length.(RTVec))
+LinRT_IParam = RTInterpParam(MinRT, MaxRT, RTRes, 5)
+RT = getinterploc(LinRT_IParam)
+RTLen = length(RT)
+(StartIdx, EndIdx) = dyadic_start_end_idx(RTLen)
 
-    MZVec = getmzvec.(MDVec)
-    MinMZ = minimum(get_min_mz.(MDVec))
-    MaxMZ = maximum(get_max_mz.(MDVec))
-    ResMZ = (MaxMZ - MinMZ)/1000
-    LinMZ_IParam = RebinParam(MinMZ, MaxMZ, ResMZ)
+MZVec = getmzvec.(MDVec)
+MinMZ = minimum(get_min_mz.(MDVec))
+MaxMZ = maximum(get_max_mz.(MDVec))
+ResMZ = (MaxMZ - MinMZ)/1000
+LinMZ_IParam = RebinParam(MinMZ, MaxMZ, ResMZ)
 
-    # Interpolate to get the uniform image representation of samples:
-    @time IMGVec = map(x -> getimg(x, LinRT_IParam, LinMZ_IParam), MDVec)
-
-include(joinpath(@__DIR__, "BSplRTAdjustment", "BSplRTAdjustment.jl"))
-import BSplRTAdjustment.RTAdjRec, BSplRTAdjustment.get_rt_adj_vec, BSplRTAdjustment.get_l1_cp,
-       BSplRTAdjustment.getdyadicreslevel, BSplRTAdjustment.getbsplbasismat,
-       BSplRTAdjustment.getbsplcp, BSplRTAdjustment.updatebsplcp!, BSplRTAdjustment.downsample_rtadjrec
+# Interpolate to get the uniform image representation of samples:
+IMGVec = map(x -> getimg(x, LinRT_IParam, LinMZ_IParam), MDVec)
 
 # Initializing deformation parameter in RTAdjRec:
 DeformFieldParam = RTAdjRec(RTLen, DeformBSplQuarterSupportLen, false)
@@ -86,7 +83,6 @@ DyadicResLevel = getdyadicreslevel(DeformFieldParam)
 
 DyadicResLevel >= MINDRL || throw(ErrorException("Retention resolution too low to start GIRO."))
 DyadicSizeRT = dyadic_rt_len(RTLen)
-
 
 # 1. Multi-resolution iteration: From minimal dyadic resolution level to the current level:
 for ResLevel = MINDRL : (DyadicResLevel - 2)
@@ -117,7 +113,6 @@ for ResLevel = MINDRL : (DyadicResLevel - 2)
             dI_dD = map(x -> x[2], IMG_DER_Interp)
 
             # Log-Anscombe image representation:
-
             LogAnsDeformedDownIMGVec = [(log.(anscombe.(i))) .* (i .> HardIntensityThreshold) for i in DeformedDownIMGVec]
 
             MeanImg = reduce(+, LogAnsDeformedDownIMGVec) / NumImg
@@ -215,21 +210,8 @@ for ResLevel = MINDRL : (DyadicResLevel - 2)
 
 end
 
-println("Writing out retention time adjustments in csv files:")
-for i in 1:NumImg
-
-    # interpolate to recover the deformation at scan_start_time:
-    RTAdj = get_rt_adj_vec(ResLevelDeformFieldParamVec[i])[StartIdx, EndIdx] * RTRes
-
-    RTAdjInterp = RT#RTVec[i]
-
-    D = Dict("Retention_Time" => RT,
-             "Adjustment_in_Second" => RTAdj)
-
-    writecsv(joinpath(FileDir, "$(FileName[i][1:end-4])csv"), D)
+# either write out the deformation or modify the mzml data: 
 
 end
-
-println("GIRO successfully finished. Output csv files written into directory $FileDir.")
 
 0

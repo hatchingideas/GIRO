@@ -38,6 +38,12 @@ function RTAdjRec(RTAdjLen :: Int, BSplQuarterSupportLen :: Vector{Int}, Constru
 
 end
 
+function dyadic_start_end_idx(RTA :: RTAdjRec)
+
+    (StartIdx, EndIdx) = (RTA.StartIdx, RTA.EndIdx)
+
+end
+
 function getdyadicreslevel(RTA :: RTAdjRec)
 
     RTA.DyadicResLevel

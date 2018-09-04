@@ -12,6 +12,6 @@ include("downsample_rtadjrec.jl")
 
 export RTAdjRec, get_rt_adj_vec, get_l1_cp,
        getdyadicreslevel, getbsplbasismat, getbsplcp,
-       updatebsplcp!, downsample_rtadjrec
+       updatebsplcp!, downsample_rtadjrec, dyadic_start_end_idx
 
 end
