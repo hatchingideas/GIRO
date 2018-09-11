@@ -4,18 +4,12 @@ import GIRO.GIRO_Base.MSData, GIRO.GIRO_Base.InterpParam, GIRO.GIRO_Base.BU, GIR
 
 import GIRO.mzML.getrtvec, GIRO.mzML.getmzvec, GIRO.mzML.getintensityvec
 
-abstract type MZInterpParam <: InterpParam end
-
-include("RebinParam.jl")
-
-include("rebin_mz.jl")
-
 include("RTInterpParam.jl")
 
 include("interp_rt.jl")
 
 include("getimg.jl")
 
-export RebinParam, rebin_mz, RTInterpParam, getinterploc, getinterplocwithboundarywin, interp_rt, getimg
+export RTInterpParam, getinterploc, getinterplocwithboundarywin, interp_rt, getimg
 
 end

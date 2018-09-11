@@ -6,7 +6,7 @@
 
 workspace()
 
-addprocs(2)#Sys.CPU_CORES)
+addprocs(Sys.CPU_CORES)
 
 @everywhere using GIRO.GIRO_Base
 @everywhere using GIRO.mzML
@@ -18,12 +18,28 @@ using Base.Profile, Plots, Interpolations
 
 @time begin
 
-FileDir = "F:\\CPTAC\\mzML\\MS1_Align\\Profile"
+FileDir = "/home/hl16839/H_Data/Proteomics_Benchmarking/CPTAC_St6LTQ_OrbitrapO_65/mzML/Profile/Original"
+#FileDir = "F:\\CPTAC\\mzML\\MS1_Align\\Profile"
 #FileDir = "/media/hl16839/My\ Passport/CPTAC/mzML/MS1_Align/Profile"
+
+FileName = ["mam_042408o_CPTAC_study6_6B011.mzML",
+    "mam_042408o_CPTAC_study6_6C008.mzML",
+    "mam_042408o_CPTAC_study6_6D004.mzML",
+    "mam_042408o_CPTAC_study6_6E004.mzML",
+    "mam_050108o_CPTAC_study6_6B011_080504231912.mzML",
+    "mam_050108o_CPTAC_study6_6B011.mzML",
+    "mam_050108o_CPTAC_study6_6C008_080505040419.mzML",
+    "mam_050108o_CPTAC_study6_6C008.mzML",
+    "mam_050108o_CPTAC_study6_6D004_080505084927.mzML",
+    "mam_050108o_CPTAC_study6_6D004.mzML",
+    "mam_050108o_CPTAC_study6_6E004_080505133441.mzML",
+    "mam_050108o_CPTAC_study6_6E004.mzML"]
+
+#=
 
 FileName = ["klc_031308p_cptac_study6_6B011_080316024238.mzML",
             "klc_031308p_cptac_study6_6B011_080317214550.mzML"]#,
-#=            "klc_031308p_cptac_study6_6B011.mzML",
+            "klc_031308p_cptac_study6_6B011.mzML",
             "klc_031308p_cptac_study6_6C008_080316072741.mzML",
             "klc_031308p_cptac_study6_6C008_080318023052.mzML",
             "klc_031308p_cptac_study6_6C008.mzML",
@@ -38,7 +54,16 @@ FileName = ["klc_031308p_cptac_study6_6B011_080316024238.mzML",
 
 println("Starting GIRO:")
 
-MDVec = pmap(x -> getmsdata(FileDir, x), FileName)
+import GIRO.mzML.mzMLSpectrum
+
+MinMZ = 300.
+MaxMZ = 1500.
+ResMZ = 2.
+LinMZ_IParam = RebinParam(MinMZ, MaxMZ, ResMZ)
+
+get_rebinned_msdata(FileDir, FileName[2], LinMZ_IParam)
+
+@time MDVec = pmap(x -> getmsdata(FileDir, x, LinMZ_IParam), FileName)
 
 MaxDeformIterations = 50
 
@@ -67,12 +92,6 @@ RT = getinterploc(LinRT_IParam)
 RTLen = length(RT)
 (StartIdx, EndIdx) = dyadic_start_end_idx(RTLen)
 
-MZVec = getmzvec.(MDVec)
-MinMZ = minimum(get_min_mz.(MDVec))
-MaxMZ = maximum(get_max_mz.(MDVec))
-ResMZ = (MaxMZ - MinMZ)/1000
-LinMZ_IParam = RebinParam(MinMZ, MaxMZ, ResMZ)
-
 # Interpolate to get the uniform image representation of samples:
 IMGVec = pmap(x -> getimg(x, LinRT_IParam, LinMZ_IParam), MDVec)
 
@@ -89,7 +108,7 @@ DyadicResLevel >= MINDRL || throw(ErrorException("Retention resolution too low t
 DyadicSizeRT = dyadic_rt_len(RTLen)
 
 DyadicStartTime = RT[1] - (StartIdx-1)*RTRes
-DyadicEndTime = RT[end] + (DyadicSizeRT - EndIdx+.5)*RTRes 
+DyadicEndTime = RT[end] + (DyadicSizeRT - EndIdx+.5)*RTRes
 
 # 1. Multi-resolution iteration: From minimal dyadic resolution level to the current level:
 for ResLevel = MINDRL : MINDRL+3#(DyadicResLevel - 2)

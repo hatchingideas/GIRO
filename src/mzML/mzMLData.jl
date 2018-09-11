@@ -43,6 +43,8 @@ function mzMLData(FileDir :: String, FileName :: String)
 
     end
 
+    Spectrum = filter(x -> !isempty(x.MZ), Spectrum)
+
     NumSpectrum = length(Spectrum)
 
     RTVec = map(x -> x.ScanStartTime, Spectrum)
@@ -59,10 +61,47 @@ function mzMLData(FileDir :: String, FileName :: String)
 
 end
 
-# Facade for mzMLData:
-function getmsdata(FileDir :: String, FileName :: String)
 
-    mzMLData(FileDir, FileName)
+# Facade for mzMLData:
+function get_rebinned_msdata(FileDir :: String, FileName :: String, LinMZ_IParam :: RebinParam)
+
+    @checkfileexist FileDir FileName
+
+    Spectrum = Vector{mzMLSpectrum}()
+
+    FIO = open(joinpath(FileDir, FileName), "r")
+
+    while !eof(FIO)
+
+        S = readinspecifiedlines(FIO, "<spectrum ", "</spectrum>")
+
+        if S == nothing
+
+            break
+
+        end
+
+        mzMLSpectrumETree = xp_parse(S);
+
+        push!(Spectrum, mzMLSpectrum(mzMLSpectrumETree, LinMZ_IParam))
+
+    end
+
+    Spectrum = filter(x -> !isempty(x.MZ), Spectrum)
+
+    NumSpectrum = length(Spectrum)
+
+    RTVec = map(x -> x.ScanStartTime, Spectrum)
+
+    RTStart = minimum(RTVec) - RTMargin
+
+    RTEnd = maximum(RTVec) + RTMargin
+
+    MZStart = mapreduce(x -> minimum(x.MZ.nzval), min, Spectrum) - MZMargin
+
+    MZEnd = mapreduce(x -> maximum(x.MZ.nzval), max, Spectrum) + MZMargin
+
+    mzMLData(RTStart, RTEnd, MZStart, MZEnd, NumSpectrum, Spectrum)
 
 end
 
