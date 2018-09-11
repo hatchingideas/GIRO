@@ -19,10 +19,6 @@ function mzMLData(FileDir :: String, FileName :: String)
 
     @checkfileexist FileDir FileName
 
-    RTMargin = .1
-
-    MZMargin = .1
-
     Spectrum = Vector{mzMLSpectrum}()
 
     FIO = open(joinpath(FileDir, FileName), "r")
@@ -49,13 +45,13 @@ function mzMLData(FileDir :: String, FileName :: String)
 
     RTVec = map(x -> x.ScanStartTime, Spectrum)
 
-    RTStart = minimum(RTVec) - RTMargin
+    RTStart = minimum(RTVec)
 
-    RTEnd = maximum(RTVec) + RTMargin
+    RTEnd = maximum(RTVec)
 
-    MZStart = mapreduce(x -> minimum(x.MZ.nzval), min, Spectrum) - MZMargin
+    MZStart = mapreduce(x -> minimum(x.MZ.nzval), min, Spectrum)
 
-    MZEnd = mapreduce(x -> maximum(x.MZ.nzval), max, Spectrum) + MZMargin
+    MZEnd = mapreduce(x -> maximum(x.MZ.nzval), max, Spectrum)
 
     this = mzMLData(RTStart, RTEnd, MZStart, MZEnd, NumSpectrum, Spectrum)
 
@@ -93,13 +89,13 @@ function get_rebinned_msdata(FileDir :: String, FileName :: String, LinMZ_IParam
 
     RTVec = map(x -> x.ScanStartTime, Spectrum)
 
-    RTStart = minimum(RTVec) - RTMargin
+    RTStart = minimum(RTVec)
 
-    RTEnd = maximum(RTVec) + RTMargin
+    RTEnd = maximum(RTVec)
 
-    MZStart = mapreduce(x -> minimum(x.MZ.nzval), min, Spectrum) - MZMargin
+    MZStart = mapreduce(x -> minimum(x.MZ.nzval), min, Spectrum)
 
-    MZEnd = mapreduce(x -> maximum(x.MZ.nzval), max, Spectrum) + MZMargin
+    MZEnd = mapreduce(x -> maximum(x.MZ.nzval), max, Spectrum)
 
     mzMLData(RTStart, RTEnd, MZStart, MZEnd, NumSpectrum, Spectrum)
 
