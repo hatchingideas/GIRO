@@ -1,13 +1,16 @@
 # GIRO.jl Documentation
 
-## Contents
+## Introduction: LCMS Data Retention Time Alignment
 
-```@contents
-Pages = [
-  "install.md",
-  "parameters.md",
-  "rt_adjustment.md",
-  "openms_integration.md",
-  "develop.md"
-]
+
+
+## Installation
+```julia
+Pkg.clone("https://github.com/hatchingideas/GIRO.jl")
 ```
+
+## Parameters
+
+## OpenMS TrafoXML Format Support
+
+## Future Development

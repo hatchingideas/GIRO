@@ -1,1 +1,0 @@
-## OpenMS TrafoXML Format Support
