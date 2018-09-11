@@ -1,3 +1,3 @@
 # GIRO: Group-wise Image Registration and nOrmalization for LCMS Data Processing
 
-[Documentation](./docs/src/index.md)
+[Documentation](http://hatchingideas.github.io/GIRO.jl/)
