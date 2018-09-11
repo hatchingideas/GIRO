@@ -6,7 +6,7 @@
 
 workspace()
 
-addprocs(Sys.CPU_CORES)
+addprocs(2)#Sys.CPU_CORES)
 
 @everywhere using GIRO.GIRO_Base
 @everywhere using GIRO.mzML
@@ -14,16 +14,16 @@ addprocs(Sys.CPU_CORES)
 @everywhere using GIRO.BSplRTAdjustment
 @everywhere using GIRO.Normalization
 
-using Base.Profile, Plots
+using Base.Profile, Plots, Interpolations
 
 @time begin
 
-#FileDir = "F:\\CPTAC\\mzML\\MS1_Align\\Profile"
-FileDir = "/media/hl16839/My\ Passport/CPTAC/mzML/MS1_Align/Profile"
+FileDir = "F:\\CPTAC\\mzML\\MS1_Align\\Profile"
+#FileDir = "/media/hl16839/My\ Passport/CPTAC/mzML/MS1_Align/Profile"
 
 FileName = ["klc_031308p_cptac_study6_6B011_080316024238.mzML",
-            "klc_031308p_cptac_study6_6B011_080317214550.mzML",
-            "klc_031308p_cptac_study6_6B011.mzML",
+            "klc_031308p_cptac_study6_6B011_080317214550.mzML"]#,
+#=            "klc_031308p_cptac_study6_6B011.mzML",
             "klc_031308p_cptac_study6_6C008_080316072741.mzML",
             "klc_031308p_cptac_study6_6C008_080318023052.mzML",
             "klc_031308p_cptac_study6_6C008.mzML",
@@ -33,6 +33,8 @@ FileName = ["klc_031308p_cptac_study6_6B011_080316024238.mzML",
             "klc_031308p_cptac_study6_6E004_080316165744.mzML",
             "klc_031308p_cptac_study6_6E004_080318120052.mzML",
             "klc_031308p_cptac_study6_6E004.mzML"]
+
+=#
 
 println("Starting GIRO:")
 
@@ -55,9 +57,11 @@ DeformBSplQuarterSupportLen = [4]
 BSplFilter = [1., 4., 1.]/6
 
 RTVec = getrtvec.(MDVec)
-MinRT = minimum(flatmap(x ->x, RTVec)) - .1
-MaxRT = maximum(flatmap(x ->x, RTVec)) + .1
+MinRT = minimum(flatmap(x ->x, RTVec))
+MaxRT = maximum(flatmap(x ->x, RTVec))
 RTRes = (MaxRT - MinRT) / mean(length.(RTVec))
+MinRT = MinRT - (RTRes/2)
+MaxRT = MaxRT + (RTRes/2)
 LinRT_IParam = RTInterpParam(MinRT, MaxRT, RTRes, 5)
 RT = getinterploc(LinRT_IParam)
 RTLen = length(RT)
@@ -70,7 +74,7 @@ ResMZ = (MaxMZ - MinMZ)/1000
 LinMZ_IParam = RebinParam(MinMZ, MaxMZ, ResMZ)
 
 # Interpolate to get the uniform image representation of samples:
-IMGVec = map(x -> getimg(x, LinRT_IParam, LinMZ_IParam), MDVec)
+IMGVec = pmap(x -> getimg(x, LinRT_IParam, LinMZ_IParam), MDVec)
 
 # Initializing deformation parameter in RTAdjRec:
 DeformFieldParam = RTAdjRec(RTLen, DeformBSplQuarterSupportLen, false)
@@ -84,8 +88,11 @@ DyadicResLevel = getdyadicreslevel(DeformFieldParam)
 DyadicResLevel >= MINDRL || throw(ErrorException("Retention resolution too low to start GIRO."))
 DyadicSizeRT = dyadic_rt_len(RTLen)
 
+DyadicStartTime = RT[1] - (StartIdx-1)*RTRes
+DyadicEndTime = RT[end] + (DyadicSizeRT - EndIdx+.5)*RTRes 
+
 # 1. Multi-resolution iteration: From minimal dyadic resolution level to the current level:
-for ResLevel = MINDRL : (DyadicResLevel - 2)
+for ResLevel = MINDRL : MINDRL+3#(DyadicResLevel - 2)
 
     # Down-sample LCMS images:
     DownIMGVec = map(x -> downsample2level(x, ResLevel), IMGVec)
@@ -210,7 +217,35 @@ for ResLevel = MINDRL : (DyadicResLevel - 2)
 
 end
 
-# either write out the deformation or modify the mzml data: 
+RTAdjVec = map(x -> get_rt_adj_vec(x), ResLevelDeformFieldParamVec)
+
+RTAdjDyadicResLevel = getdyadicreslevel(ResLevelDeformFieldParamVec[1])
+
+RTDyadicLen = 2^RTAdjDyadicResLevel
+
+ResPerPixel = RTRes * 2^(DyadicResLevel - RTAdjDyadicResLevel)
+
+RTAdjInterpLoc = (DyadicStartTime + ResPerPixel / 2) : ResPerPixel : DyadicEndTime
+
+AdjustedRT = Vector(NumImg)
+
+for i in 1:NumImg
+
+    interpcubic = CubicSplineInterpolation(RTAdjInterpLoc, ResPerPixel*RTAdjVec[i])
+
+    AdjustedRT[i] = map(x -> x+interpcubic(x), RTVec[i])
+
+end
+
+using Plots
+
+q = plot(RTVec[1], AdjustedRT[1])
+
+plot!(q, RTVec[2], AdjustedRT[2])
+
+display(q)
+
+# Write out trafoXML:
 
 end
 
