@@ -238,11 +238,11 @@ function mzMLSpectrum(mzMLSpectrumETree :: ETree, LinMZ_IParam :: RebinParam)
 
                 Intensity = reinterpret(Float64, IntensityBinary)
 
-            elseif FloatBits[MZIdx] == "32"
+            elseif FloatBits[IntensityIdx] == "32"
 
                 Intensity = reinterpret(Float32, IntensityBinary)
 
-            elseif FloatBits[MZIdx] == "16"
+            elseif FloatBits[IntensityIdx] == "16"
 
                 Intensity = reinterpret(Float16, IntensityBinary)
 
