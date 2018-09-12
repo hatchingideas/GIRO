@@ -14,7 +14,7 @@ function write_rtadj_trafoxml(FilePath :: String, DictRTAdj :: Dict)
 		println(f, """\t\t<Param  type="string" name="extrapolate" value="linear"/>""")
 		println(f, """\t\t<Param  type="int" name="boundary_condition" value="2"/>""")
         println(f, """\t\t<Pairs count="$NumRTLoc">""")
-        [println(f, """\t\t\t<Pair from="$(RTLoc[i])" to="$(RTLoc[i] + DictRTAdj[RTLoc[i]])"/>""") for i in 1:NumRTLoc]
+        [println(f, """\t\t\t<Pair from="$(RTLoc[i])" to="$(DictRTAdj[RTLoc[i]])"/>""") for i in 1:NumRTLoc]
         println(f, """\t\t</Pairs>""")
         println(f, """\t</Transformation>""")
         println(f, """</TrafoXML>""")
