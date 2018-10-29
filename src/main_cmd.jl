@@ -63,7 +63,7 @@ LinMZ_IParam = RebinParam(MinMZ, MaxMZ, ResMZ)
 
 get_rebinned_msdata(FileDir, FileName[2], LinMZ_IParam)
 
-@time MDVec = pmap(x -> getmsdata(FileDir, x, LinMZ_IParam), FileName)
+@time MDVec = pmap(x -> get_rebinned_msdata(FileDir, x, LinMZ_IParam), FileName)
 
 MaxDeformIterations = 50
 
@@ -93,7 +93,7 @@ RTLen = length(RT)
 (StartIdx, EndIdx) = dyadic_start_end_idx(RTLen)
 
 # Interpolate to get the uniform image representation of samples:
-IMGVec = pmap(x -> getimg(x, LinRT_IParam, LinMZ_IParam), MDVec)
+IMGVec = pmap(x -> getimg(x, LinRT_IParam), MDVec)
 
 # Initializing deformation parameter in RTAdjRec:
 DeformFieldParam = RTAdjRec(RTLen, DeformBSplQuarterSupportLen, false)

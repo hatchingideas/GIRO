@@ -1,5 +1,7 @@
 # GIRO: Group-wise Image Registration and nOrmalization for Liquid-Chromatography tandem Mass-Spectrometry (LCMS) Data Processing
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 ## Brief Introduction
 
 LCMS is the work-horse for proteomics study. Due to various reasons the retention time of chromatograms may shift from run to run. This software implements a B-spline image registration based method to warp multiple LCMS samples simultaneously so that the retention time differences across samples can be aligned.
