@@ -4,80 +4,19 @@
    It can be invoked in command line:
 =#
 
-workspace()
-
-addprocs(Sys.CPU_CORES)
-
-@everywhere using GIRO.GIRO_Base
-@everywhere using GIRO.mzML
-@everywhere using GIRO.ImageRepresentation
-@everywhere using GIRO.BSplRTAdjustment
-@everywhere using GIRO.Normalization
-
-using Base.Profile, Plots, Interpolations
-
-@time begin
-
-FileDir = "/home/hl16839/H_Data/Proteomics_Benchmarking/CPTAC_St6LTQ_OrbitrapO_65/mzML/Profile/Original"
-#FileDir = "F:\\CPTAC\\mzML\\MS1_Align\\Profile"
-#FileDir = "/media/hl16839/My\ Passport/CPTAC/mzML/MS1_Align/Profile"
-
-FileName = ["mam_042408o_CPTAC_study6_6B011.mzML",
-    "mam_042408o_CPTAC_study6_6C008.mzML",
-    "mam_042408o_CPTAC_study6_6D004.mzML",
-    "mam_042408o_CPTAC_study6_6E004.mzML",
-    "mam_050108o_CPTAC_study6_6B011_080504231912.mzML",
-    "mam_050108o_CPTAC_study6_6B011.mzML",
-    "mam_050108o_CPTAC_study6_6C008_080505040419.mzML",
-    "mam_050108o_CPTAC_study6_6C008.mzML",
-    "mam_050108o_CPTAC_study6_6D004_080505084927.mzML",
-    "mam_050108o_CPTAC_study6_6D004.mzML",
-    "mam_050108o_CPTAC_study6_6E004_080505133441.mzML",
-    "mam_050108o_CPTAC_study6_6E004.mzML"]
-
-#=
-
-FileName = ["klc_031308p_cptac_study6_6B011_080316024238.mzML",
-            "klc_031308p_cptac_study6_6B011_080317214550.mzML"]#,
-            "klc_031308p_cptac_study6_6B011.mzML",
-            "klc_031308p_cptac_study6_6C008_080316072741.mzML",
-            "klc_031308p_cptac_study6_6C008_080318023052.mzML",
-            "klc_031308p_cptac_study6_6C008.mzML",
-            "klc_031308p_cptac_study6_6D004_080316121242.mzML",
-            "klc_031308p_cptac_study6_6D004_080318071552.mzML",
-            "klc_031308p_cptac_study6_6D004.mzML",
-            "klc_031308p_cptac_study6_6E004_080316165744.mzML",
-            "klc_031308p_cptac_study6_6E004_080318120052.mzML",
-            "klc_031308p_cptac_study6_6E004.mzML"]
-
-=#
+function multires_l1_ls(FileDir :: String, FileName :: Vector{String},
+                        MinMZ :: Float64, MaxMZ :: Float64, ResMZ :: Float64;
+                        MaxDeformIterations = 50, MaxNormIterations = 20,
+                        Lambda = .01, HardIntensityThreshold = 2,
+                        NormBSplQuarterSupportLen = [8, 4], DeformBSplQuarterSupportLen = [4])
 
 println("Starting GIRO:")
 
-import GIRO.mzML.mzMLSpectrum
-
-MinMZ = 300.
-MaxMZ = 1500.
-ResMZ = 2.
 LinMZ_IParam = RebinParam(MinMZ, MaxMZ, ResMZ)
 
-get_rebinned_msdata(FileDir, FileName[2], LinMZ_IParam)
-
-@time MDVec = pmap(x -> get_rebinned_msdata(FileDir, x, LinMZ_IParam), FileName)
-
-MaxDeformIterations = 50
-
-MaxNormIterations = 20
+MDVec = pmap(x -> get_rebinned_msdata(FileDir, x, LinMZ_IParam), FileName)
 
 NumImg = length(FileName)
-
-Lambda = .1
-
-HardIntensityThreshold = 2
-
-NormBSplQuarterSupportLen = [8, 4]
-
-DeformBSplQuarterSupportLen = [4]
 
 BSplFilter = [1., 4., 1.]/6
 
@@ -254,18 +193,10 @@ for i in 1:NumImg
 
     AdjustedRT[i] = map(x -> x+interpcubic(x), RTVec[i])
 
-end
-
-using Plots
-
-q = plot(RTVec[1], AdjustedRT[1])
-
-plot!(q, RTVec[2], AdjustedRT[2])
-
-display(q)
-
-# Write out trafoXML:
+    # Write out trafoXML:
 
 end
 
 0
+
+end

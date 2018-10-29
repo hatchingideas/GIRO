@@ -15,7 +15,7 @@ include(joinpath("Normalization", "Normalization.jl"))
 # Retention time adjustment vector by Bspline bases and control points:
 include(joinpath("BSplRTAdjustment", "BSplRTAdjustment.jl"))
 
-#using ArgParse
-#include("parse_command.jl")
+# Running alignment as one integral strategy:
+include(joinpath("AlignmentStrategies", "AlignmentStrategies.jl"))
 
 end

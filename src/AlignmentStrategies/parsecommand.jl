@@ -1,8 +1,4 @@
-using ArgParse
-
-function parse_command()
-
-
+function parsecommand(Arguments)
 
 s = ArgParseSettings()
 
@@ -52,6 +48,6 @@ s = ArgParseSettings()
 
 end
 
-
+ParsedArgs = parse_args(Arguments, s)
 
 end

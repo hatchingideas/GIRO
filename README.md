@@ -15,3 +15,14 @@ Pkg.clone("https://github.com/hatchingideas/GIRO.jl")
 ```
 
 This will install the main package as well as the dependencies listed in REQUIRE file. The main workflow is in main_cmd.jl file, please run it for help. More detailed descriptions can be found in [Documentation](http://hatchingideas.github.io/GIRO.jl/).
+
+
+addprocs(Sys.CPU_CORES)
+
+```julia
+@everywhere using GIRO.AlignmentStrategies
+```
+
+```console
+$ julia -e 'using GIRO.AlignmentStrategies; isempty(ARGS) ? println("Empty") : runalignment(ARGS)'
+```
