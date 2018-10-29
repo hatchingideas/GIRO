@@ -4,8 +4,8 @@
    It can be invoked in command line:
 =#
 
-function multires_l1_ls(FileDir :: String, FileName :: Vector{String},
-                        MinMZ :: Float64, MaxMZ :: Float64, ResMZ :: Float64;
+function multires_l1_ls(FileDir :: String, FileName :: Vector{String};
+                        MinMZ :: Float64, MaxMZ :: Float64, ResMZ :: Float64,
                         MaxDeformIterations = 50, MaxNormIterations = 20,
                         Lambda = .01, HardIntensityThreshold = 2,
                         NormBSplQuarterSupportLen = [8, 4], DeformBSplQuarterSupportLen = [4])

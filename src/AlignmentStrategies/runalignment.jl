@@ -1,12 +1,12 @@
 function runalignment(AlignmentStrategyChosen :: MultiResL1LS,
-                      FileDir :: String, FileName :: Vector{String},
-                      MinMZ :: Float64, MaxMZ :: Float64, ResMZ :: Float64;
+                      FileDir :: String, FileName :: Vector{String};
+                      MinMZ = 300., MaxMZ = 1500., ResMZ = 2.,
                       MaxDeformIterations = 50, MaxNormIterations = 20,
                       Lambda = .01, HardIntensityThreshold = 2,
                       NormBSplQuarterSupportLen = [8, 4], DeformBSplQuarterSupportLen = [4])
 
-    multires_l1_ls(FileDir, FileName,
-                   MinMZ, MaxMZ, ResMZ;
+    multires_l1_ls(FileDir, FileName;
+                   MinMZ, MaxMZ, ResMZ,
                    MaxDeformIterations, MaxNormIterations,
                    Lambda, HardIntensityThreshold,
                    NormBSplQuarterSupportLen, DeformBSplQuarterSupportLen)
@@ -19,12 +19,10 @@ function runalignment(Arguments)
 
     ParsedArgs = parsecommand(Arguments)
 
-    for (arg, val) in ParsedArgs
-
-        println("$arg => $val")
-
-    end
-
-#    multires_l1_ls()
+    multires_l1_ls(MultiResL1LS(), ParsedArgs["dir"], ParsedArgs["files"],
+                   MinMZ=ParsedArgs["minMZ"], MaxMZ=ParsedArgs["maxMZ"], ResMZ=ParsedArgs["resMZ"],
+                   MaxDeformIterations=ParsedArgs["maxDeformIterations"], MaxNormIterations=ParsedArgs["maxNormIterations"],
+                   Lambda=ParsedArgs["lambda"], HardIntensityThreshold=ParsedArgs["hardIntensityThreshold"],
+                   NormBSplQuarterSupportLen=ParsedArgs["normBSplQuarterSupportLen"], DeformBSplQuarterSupportLen=ParsedArgs["coarseness"])
 
 end
