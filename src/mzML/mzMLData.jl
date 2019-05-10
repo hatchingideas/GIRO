@@ -33,6 +33,8 @@ function mzMLData(FileDir :: String, FileName :: String)
 
         end
 
+        println(S)
+
         mzMLSpectrumETree = xp_parse(S);
 
         push!(Spectrum, mzMLSpectrum(mzMLSpectrumETree))

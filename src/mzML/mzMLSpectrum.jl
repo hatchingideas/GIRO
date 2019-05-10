@@ -20,7 +20,7 @@ function mzMLSpectrum(mzMLSpectrumETree :: ETree)
 
     mzMLSpectrumETree.name == "spectrum" || throw(ErrorException("Wrong type of ETree: expecting spectrum, getting $(mzMLSpectrumETree.name)"))
 
-    Index = parse(mzMLSpectrumETree.attr["index"])
+    Index = parse(Int32, mzMLSpectrumETree.attr["index"])
 
     Id = mzMLSpectrumETree.attr["id"]
 
@@ -65,8 +65,8 @@ function mzMLSpectrum(mzMLSpectrumETree :: ETree)
 
     IsZLibCompressed = map(x -> mapreduce(y -> y.attr["name"] == "zlib compression", |, x), BinaryDataArraycvParamETree)
 
-    MZIdx = find(x -> mapreduce(y -> y.attr["name"] == "m/z array", |, x), BinaryDataArraycvParamETree)[1]
-    IntensityIdx = find(x -> mapreduce(y -> y.attr["name"] == "intensity array", |, x), BinaryDataArraycvParamETree)[1]
+    MZIdx = findall(x -> mapreduce(y -> y.attr["name"] == "m/z array", |, x), BinaryDataArraycvParamETree)[1]
+    IntensityIdx = findall(x -> mapreduce(y -> y.attr["name"] == "intensity array", |, x), BinaryDataArraycvParamETree)[1]
 
     MZBin = LibExpat.find(BinaryDataArray[MZIdx], "binary")
 
@@ -148,7 +148,7 @@ function mzMLSpectrum(mzMLSpectrumETree :: ETree, LinMZ_IParam :: RebinParam)
 
     mzMLSpectrumETree.name == "spectrum" || throw(ErrorException("Wrong type of ETree: expecting spectrum, getting $(mzMLSpectrumETree.name)"))
 
-    Index = parse(mzMLSpectrumETree.attr["index"])
+    Index = parse(Int32, mzMLSpectrumETree.attr["index"])
 
     Id = mzMLSpectrumETree.attr["id"]
 
@@ -193,8 +193,8 @@ function mzMLSpectrum(mzMLSpectrumETree :: ETree, LinMZ_IParam :: RebinParam)
 
     IsZLibCompressed = map(x -> mapreduce(y -> y.attr["name"] == "zlib compression", |, x), BinaryDataArraycvParamETree)
 
-    MZIdx = find(x -> mapreduce(y -> y.attr["name"] == "m/z array", |, x), BinaryDataArraycvParamETree)[1]
-    IntensityIdx = find(x -> mapreduce(y -> y.attr["name"] == "intensity array", |, x), BinaryDataArraycvParamETree)[1]
+    MZIdx = findall(x -> mapreduce(y -> y.attr["name"] == "m/z array", |, x), BinaryDataArraycvParamETree)[1]
+    IntensityIdx = findall(x -> mapreduce(y -> y.attr["name"] == "intensity array", |, x), BinaryDataArraycvParamETree)[1]
 
     MZBin = LibExpat.find(BinaryDataArray[MZIdx], "binary")
 

@@ -1,8 +1,8 @@
 module TestmzML
 
-include(realpath(joinpath(@__DIR__, "..", "..", "src", "mzML", "mzML.jl")))
+using Revise
 
-using GIRO.mzML, Base.Test
+using GIRO.mzML, Test
 
 function testmzml()
 
@@ -17,6 +17,8 @@ function testmzml()
     end
 
 end
+
+testmzml()
 
 export testmzml
 

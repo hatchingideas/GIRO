@@ -7,9 +7,9 @@ function rebin_mz(MZ :: Union{Vector, SparseVector}, Intensity :: Union{Vector, 
 
     MZRange = getmidloc(LinMZ_IParam)
 
-    StartIdx = find(x -> x < MZRange[1], MZ)
+    StartIdx = findall(x -> x < MZRange[1], MZ)
     Intensity[StartIdx] = 0
-    EndIdx = find(x -> x > MZRange[end], MZ)
+    EndIdx = findall(x -> x > MZRange[end], MZ)
     Intensity[EndIdx] = 0
 
     LinIntensity = zeros(length(ILoc))

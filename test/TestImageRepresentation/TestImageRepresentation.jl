@@ -1,7 +1,5 @@
 module TestImageRepresentation
 
-workspace()
-
 addprocs(2)
 
 include(realpath(joinpath(@__DIR__, "..", "..", "src", "mzML", "mzML.jl")))

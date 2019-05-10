@@ -1,0 +1,12 @@
+name = "GIRO"
+uuid = "a4befb62-7869-575e-8c95-3fbe8ea3e4a6"
+authors = ["Hanqing Liao <hatchingideas@gmail.com>"]
+version = "0.7.0"
+
+[deps]
+Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
+CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
+LibExpat = "522f3ed2-3f36-55e3-b6df-e94fee9b0c07"
+Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"

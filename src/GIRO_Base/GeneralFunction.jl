@@ -24,7 +24,7 @@ function readinspecifiedlines(f :: IO, StartMark :: String, EndMark :: String)
 
         Str = readline(f)
 
-        if contains(Str, StartMark)
+        if occursin(StartMark, Str)
 
             ReadFlag = true
 
@@ -32,11 +32,11 @@ function readinspecifiedlines(f :: IO, StartMark :: String, EndMark :: String)
 
         end
 
-        if (ReadFlag == true) && contains(Str, EndMark)
+        if (ReadFlag == true) && occursin(EndMark, Str)
 
             write(Buffer, Str)
 
-            return String(Buffer)
+            return String(take!(Buffer))
 
         else
 
@@ -178,7 +178,7 @@ function bspl_interp_derivative(RTAdjVec :: Vector, IMG :: Matrix)
     RT_Idx_On_Grid = map(x -> searchsortedfirst(RTVec, x), RTAdjustedVec)
 
     # Remove "out-of-boundary" control points:
-    InBoundIdx = find(x -> (x >= 1) && (x <= RTLen), RT_Idx_On_Grid)
+    InBoundIdx = findall(x -> (x >= 1) && (x <= RTLen), RT_Idx_On_Grid)
 
     UniqueCP_Idx = sort(unique(RT_Idx_On_Grid[InBoundIdx]))
     NumUniqueCP = length(UniqueCP_Idx)
@@ -189,7 +189,7 @@ function bspl_interp_derivative(RTAdjVec :: Vector, IMG :: Matrix)
     # Combine/Re-generate the B-spline control points for "":
     for i in 1:NumUniqueCP
 
-        NewCPIdx = find(RT_Idx_On_Grid .== UniqueCP_Idx[i])
+        NewCPIdx = findall(RT_Idx_On_Grid .== UniqueCP_Idx[i])
 
         NewRTVec[i] = mean(RTAdjustedVec[NewCPIdx])
 

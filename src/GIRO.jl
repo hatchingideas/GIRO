@@ -7,15 +7,17 @@ include(joinpath("GIRO_Base", "GIRO_Base.jl"))
 include(joinpath("mzML", "mzML.jl"))
 
 # Formatting mzML samples into images:
-include(joinpath("ImageRepresentation", "ImageRepresentation.jl"))
+# include(joinpath("ImageRepresentation", "ImageRepresentation.jl"))
 
 # Normalizing Images:
 include(joinpath("Normalization", "Normalization.jl"))
 
 # Retention time adjustment vector by Bspline bases and control points:
-include(joinpath("BSplRTAdjustment", "BSplRTAdjustment.jl"))
+#include(joinpath("BSplRTAdjustment", "BSplRTAdjustment.jl"))
 
 # Running alignment as one integral strategy:
-include(joinpath("AlignmentStrategies", "AlignmentStrategies.jl"))
+#include(joinpath("AlignmentStrategies", "AlignmentStrategies.jl"))
+
+# Visualizing (single/multiple) LC-MS samples:
 
 end

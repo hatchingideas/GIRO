@@ -1,7 +1,5 @@
 println("Starting to run unit test.")
 
-workspace()
-
 include(joinpath("TestmzML", "TestmzML.jl"))
 using TestmzML
 a = testmzml()
