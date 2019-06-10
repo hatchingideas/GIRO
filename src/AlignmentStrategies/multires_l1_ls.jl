@@ -4,7 +4,7 @@
    It can be invoked in command line:
 =#
 
-function multires_l1_ls(FileDir :: String, FileName :: Vector{String};
+function multires_l1_ls(FileDir :: String, FileName :: Vector{String},
                         MinMZ :: Float64, MaxMZ :: Float64, ResMZ :: Float64,
                         MaxDeformIterations = 50, MaxNormIterations = 20,
                         Lambda = .01, HardIntensityThreshold = 2,
@@ -14,7 +14,7 @@ println("Starting GIRO:")
 
 LinMZ_IParam = RebinParam(MinMZ, MaxMZ, ResMZ)
 
-MDVec = pmap(x -> get_rebinned_msdata(FileDir, x, LinMZ_IParam), FileName)
+MDVec = map(x -> get_rebinned_msdata(FileDir, x, LinMZ_IParam), FileName)
 
 NumImg = length(FileName)
 
@@ -32,7 +32,7 @@ RTLen = length(RT)
 (StartIdx, EndIdx) = dyadic_start_end_idx(RTLen)
 
 # Interpolate to get the uniform image representation of samples:
-IMGVec = pmap(x -> getimg(x, LinRT_IParam), MDVec)
+IMGVec = map(x -> getimg(x, LinRT_IParam), MDVec)
 
 # Initializing deformation parameter in RTAdjRec:
 DeformFieldParam = RTAdjRec(RTLen, DeformBSplQuarterSupportLen, false)
@@ -71,7 +71,7 @@ for ResLevel = MINDRL : MINDRL+3#(DyadicResLevel - 2)
             # Deform the images:
             RTAdjVec = get_rt_adj_vec.(ResLevelDeformFieldParamVec)
 
-            IMG_DER_Interp = pmap((x,y) -> bspl_interp_derivative(x,y), RTAdjVec, DownIMGVec)
+            IMG_DER_Interp = map((x,y) -> bspl_interp_derivative(x,y), RTAdjVec, DownIMGVec)
 
             DeformedDownIMGVec = map(x -> x[1], IMG_DER_Interp)
 
@@ -113,11 +113,12 @@ for ResLevel = MINDRL : MINDRL+3#(DyadicResLevel - 2)
                 for DeformIter in 1:MaxDeformIterations
 
                     # Chain rule for CP gradient:
-                    dF_dCP = map((w,x,y,z) -> [MaxDeform * sum(i' * normalizedchainrule(w, x, y), 2) for i in z],
+                    dF_dCP = map((w,x,y,z) -> [MaxDeform * sum(i' * normalizedchainrule(w, x, y), dims = 2) for i in z],
                     NormLogAnsDeformedDownIMGVec, dF_dI, dI_dD, dD_dCP)
 
                     # Pre-compute the deformation field to estimate the normalizing factor:
-                    DeltaRTAdjUpdateVec = [reduce(+, map((x,y) -> x*y, getbsplbasismat.(ResLevelDeformFieldParamVec[i]), dF_dCP[i])) for i in 1:NumImg]
+
+                    DeltaRTAdjUpdateVec = [reduce(+, map((x,y) -> x*y, getbsplbasismat(ResLevelDeformFieldParamVec[i]), dF_dCP[i])) for i in 1:NumImg]
 
 #                    MaxDeform == 1. ? MaxDeform = DeformStepSize / mapreduce(x -> maximum(abs.(x)), max, DeltaRTAdjUpdateVec) : nothing
                     MaxDeform = DeformStepSize / mapreduce(x -> maximum(abs.(x)), max, DeltaRTAdjUpdateVec)
@@ -126,12 +127,12 @@ for ResLevel = MINDRL : MINDRL+3#(DyadicResLevel - 2)
                     # Re-normalize CP update and soft thresholding by Lambda:
                     NormThreshCP = [map(x -> softthreshold(MaxDeform * x, Lambda), i) for i in dF_dCP]
 
-                    UpdatedCP_Vec = map((x, y) -> map(z -> squeeze(z, 2), getbsplcp(x) .+ y), ResLevelDeformFieldParamVec, NormThreshCP)
+                    UpdatedCP_Vec = map((x, y) -> map(z -> dropdims(z, dims = 2), getbsplcp(x) .+ y), ResLevelDeformFieldParamVec, NormThreshCP)
 
                     RTAdjVec = map((x,y) -> reduce(+, map(*, getbsplbasismat(x), y)), ResLevelDeformFieldParamVec, UpdatedCP_Vec)
 
                     # Deforme the image and re-normalize:
-                    DeformedIMGDerVec = pmap((x,y) -> bspl_interp_derivative(x,y), RTAdjVec, DownIMGVec)
+                    DeformedIMGDerVec = map((x,y) -> bspl_interp_derivative(x,y), RTAdjVec, DownIMGVec)
 
                     LogAnsNormDeformedIMGVec = map((x,y) -> log.(anscombe.(x[1] .* y)), DeformedIMGDerVec, NMask)
 
@@ -194,6 +195,7 @@ for i in 1:NumImg
     AdjustedRT[i] = map(x -> x+interpcubic(x), RTVec[i])
 
     # Write out trafoXML:
+    write_rtadj_trafoxml(joinpath(FileDir, string(split(FileName[i], ".")[1], "trafoXML")), Dict(RTVec[i][j] => AdjustedRT[i][j] for j in 1:length(RTVec[i])))
 
 end
 

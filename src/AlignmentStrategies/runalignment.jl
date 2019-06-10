@@ -1,6 +1,6 @@
 function runalignment(AlignmentStrategyChosen :: MultiResL1LS,
-                      FileDir :: String, FileName :: Vector{String};
-                      MinMZ = 300., MaxMZ = 1500., ResMZ = 2.,
+                      FileDir :: String, FileName :: Vector{String},
+                      MinMZ :: Float64 = 300., MaxMZ :: Float64 = 1500., ResMZ :: Float64 = 2.,
                       MaxDeformIterations = 50, MaxNormIterations = 20,
                       Lambda = .01, HardIntensityThreshold = 2,
                       NormBSplQuarterSupportLen = [8, 4], DeformBSplQuarterSupportLen = [4])

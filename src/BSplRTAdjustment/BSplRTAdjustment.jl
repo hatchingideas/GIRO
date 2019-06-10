@@ -4,7 +4,7 @@ import GIRO.GIRO_Base.RTAdjustment, GIRO.GIRO_Base.dyadic_res_level, GIRO.GIRO_B
 
 import GIRO.GIRO_Base.MINDRL, GIRO.GIRO_Base.BU, GIRO.ImageRepresentation.getinterploc
 
-using LibExpat
+using LibExpat, LinearAlgebra, SparseArrays
 
 include("construct_bspl_basis.jl")
 

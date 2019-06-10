@@ -1,5 +1,7 @@
 module Normalization
 
+using SparseArrays, LinearAlgebra
+
 using GIRO.GIRO_Base
 
 include("LS_NormalParam.jl")

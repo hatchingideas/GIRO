@@ -193,7 +193,7 @@ function bspl_interp_derivative(RTAdjVec :: Vector, IMG :: Matrix)
 
         NewRTVec[i] = mean(RTAdjustedVec[NewCPIdx])
 
-        NewIMG_CP[i,:] = sum(IMG[NewCPIdx, :], 1)
+        NewIMG_CP[i,:] = sum(IMG[NewCPIdx, :], dims = 1)
 
     end
 
@@ -223,11 +223,11 @@ function normalizedchainrule(Img, dF_dI, dI_dD)
     MZLen = size(Img, 2)
 
     dF_dD = dF_dI .* dI_dD
-    N = sum(Img, 2)
+    N = sum(Img, dims = 2)
 
     for j = 1:length(N)
 
-        N[j] == 0 ? dF_dD[j,:] = 0 : dF_dD[j,:] = dF_dD[j,:] / N[j]
+        N[j] == 0 ? dF_dD[j,:] .= 0 : dF_dD[j,:] .= dF_dD[j,:] ./ N[j]
 
     end
 

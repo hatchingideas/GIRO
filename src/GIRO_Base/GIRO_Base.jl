@@ -1,6 +1,6 @@
 module GIRO_Base
 
-using Revise
+using Revise, DSP, Statistics, LinearAlgebra
 
 abstract type MSData end
 

@@ -3,7 +3,7 @@ function construct_bspl_basis(DyadicResLevel :: T where T <: Signed, BSplQuarter
     RTLen = 2^DyadicResLevel
 
 #    for i in 1:NumResLevels
-    NumBases = RTLen / (BSplQuarterSupportLen) - 3
+    NumBases = Int64(RTLen / (BSplQuarterSupportLen) - 3)
 
     u = collect(0:BSplQuarterSupportLen-1)/BSplQuarterSupportLen
     B = [BU[1].(u), BU[2].(u), BU[3].(u), BU[4].(u)]

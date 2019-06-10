@@ -4,9 +4,14 @@ authors = ["Hanqing Liao <hatchingideas@gmail.com>"]
 version = "0.7.0"
 
 [deps]
+ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
 Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
+DSP = "717857b8-e6f2-59f4-9121-6e50c889abd2"
+ImageView = "86fae568-95e7-573e-a6b2-d8a6b900c9ef"
+Interpolations = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
 LibExpat = "522f3ed2-3f36-55e3-b6df-e94fee9b0c07"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
