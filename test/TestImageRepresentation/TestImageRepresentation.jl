@@ -33,7 +33,21 @@ FileName = ["FL1095b_IPP128_1_DMSO_even.mzML",
         "FL1095_IPP128_4_0-2uM_GRW010516_even.mzML",
         "FL1095_IPP128_5_1uM_GRW010516_even.mzML",
         "FL1095_IPP128_6_1uM_GRW010637_even.mzML",
-        "FL1095_IPP128_7_30uM_GRW011006_even.mzML"]
+        "FL1095_IPP128_7_30uM_GRW011006_even.mzML",
+        "FL1095b_IPP128_1_DMSO_odd.mzML",
+        "FL1095b_IPP128_2_NT_RNAi_odd.mzML",
+        "FL1095b_IPP128_3_ERAP_RNAi_odd.mzML",
+        "FL1095b_IPP128_4_0-2uM_GRW010516_odd.mzML",
+        "FL1095b_IPP128_5_1uM_GRW010516_odd.mzML",
+        "FL1095b_IPP128_6_1uM_GRW010637_odd.mzML",
+        "FL1095b_IPP128_7_30uM_GRW011006_odd.mzML",
+        "FL1095_IPP128_1_DMSO_odd.mzML",
+        "FL1095_IPP128_2_NT_RNAi_odd.mzML",
+        "FL1095_IPP128_3_ERAP_RNAi_odd.mzML",
+        "FL1095_IPP128_4_0-2uM_GRW010516_odd.mzML",
+        "FL1095_IPP128_5_1uM_GRW010516_odd.mzML",
+        "FL1095_IPP128_6_1uM_GRW010637_odd.mzML",
+        "FL1095_IPP128_7_30uM_GRW011006_odd.mzML"]
 
 
 FileName = ["FL1095b_IPP128_1_DMSO_even.mzML",
@@ -41,7 +55,7 @@ FileName = ["FL1095b_IPP128_1_DMSO_even.mzML",
                 "FL1095b_IPP128_3_ERAP_RNAi_even.mzML",
                 "FL1095b_IPP128_4_0-2uM_GRW010516_even.mzML"]
 
-AlignmentStrategies.multires_l1_ls(FileDir, FileName, 300., 1500., 2.)
+D = AlignmentStrategies.multires_l1_ls(FileDir, FileName, 300., 1500., 2.)
 
 D = mzMLData(FileDir, FileName[1])
 

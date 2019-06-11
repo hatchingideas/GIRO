@@ -186,19 +186,21 @@ ResPerPixel = RTRes * 2^(DyadicResLevel - RTAdjDyadicResLevel)
 
 RTAdjInterpLoc = (DyadicStartTime + ResPerPixel / 2) : ResPerPixel : DyadicEndTime
 
-AdjustedRT = Vector(NumImg)
+D = Dict()
 
 for i in 1:NumImg
 
     interpcubic = CubicSplineInterpolation(RTAdjInterpLoc, ResPerPixel*RTAdjVec[i])
 
-    AdjustedRT[i] = map(x -> x+interpcubic(x), RTVec[i])
+    AdjustedRT = map(x -> x+interpcubic(x), RTVec[i])
+
+    D[FileName[i]] = Dict(RTVec[i][j] => AdjustedRT[j] for j in 1:length(RTVec[i]))
 
     # Write out trafoXML:
-    write_rtadj_trafoxml(joinpath(FileDir, string(split(FileName[i], ".")[1], "trafoXML")), Dict(RTVec[i][j] => AdjustedRT[i][j] for j in 1:length(RTVec[i])))
+    write_rtadj_trafoxml(joinpath(FileDir, string(split(FileName[i], ".")[1], ".trafoXML")), D[FileName[i]])
 
 end
 
-0
+D
 
 end
